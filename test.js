@@ -219,7 +219,7 @@ async function hashPassword(password) {
 }
 
 // You MUST replace this with your deployed Google Apps Script URL
-const MASTER_APPS_SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE';
+const MASTER_APPS_SCRIPT_URL = (typeof window !== 'undefined' && window.ENV_APPS_SCRIPT_URL) ? window.ENV_APPS_SCRIPT_URL : 'https://script.google.com/macros/s/AKfycbz4jYswPv7LSFSkSymoQ8tBt1ui6ngLTwh5EAKNVxu5Qf16-oGT8zf6nMkczo-o5hQC/exec';
 
 let pendingRegistrationData = {};
 

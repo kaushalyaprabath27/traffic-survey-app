@@ -1,7 +1,7 @@
 const urlParams = new URLSearchParams(window.location.search);
 // Constants
 // Users will need to replace this URL with their Google Apps Script Web App URL
-const APPS_SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE';
+const APPS_SCRIPT_URL = window.ENV_APPS_SCRIPT_URL || 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE';
 const STORAGE_KEY = 'traffic_survey_offline_queue';
 
 // App State

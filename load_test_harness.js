@@ -7,7 +7,7 @@
  * Target: Google Apps Script Master Endpoint
  */
 
-const APPS_SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE';
+const APPS_SCRIPT_URL = (typeof window !== 'undefined' && window.ENV_APPS_SCRIPT_URL) ? window.ENV_APPS_SCRIPT_URL : 'https://script.google.com/macros/s/AKfycbz4jYswPv7LSFSkSymoQ8tBt1ui6ngLTwh5EAKNVxu5Qf16-oGT8zf6nMkczo-o5hQC/exec';
 
 const NUM_SURVEYORS = parseInt(process.env.TEST_SURVEYORS || '34', 10);
 const DURATION_SECONDS = parseInt(process.argv[2] || process.env.TEST_DURATION_SECONDS || '600', 10); // Default 10 min

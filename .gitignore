@@ -19,3 +19,6 @@ Thumbs.db
 # Ignore local backup exports
 traffic_survey_backup_*.json
 traffic_survey_secret_backup.json
+
+# Local configuration
+config.js

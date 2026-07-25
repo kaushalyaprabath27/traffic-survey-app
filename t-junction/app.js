@@ -1,6 +1,6 @@
 const urlParams = new URLSearchParams(window.location.search);
 // Constants
-const APPS_SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE';
+const APPS_SCRIPT_URL = window.ENV_APPS_SCRIPT_URL || 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE';
 const STORAGE_KEY = 'traffic_survey_intersection_queue';
 
 // App State

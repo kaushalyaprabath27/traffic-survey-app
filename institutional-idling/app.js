@@ -1,6 +1,6 @@
 const urlParams = new URLSearchParams(window.location.search);
 // Constants
-const APPS_SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE';
+const APPS_SCRIPT_URL = window.ENV_APPS_SCRIPT_URL || 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE';
 const STORAGE_KEY = 'school_traffic_survey_queue';
 const THEME_KEY = 'school_traffic_survey_theme';
 
