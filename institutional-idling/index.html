@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>School Traffic Survey</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <script>
+        if(window.location.search.includes('skipSetup=true')) {
+            document.write('<style>#welcome-screen, #setup-screen, #screen-welcome, #screen-setup { display: none !important; visibility: hidden !important; }</style>');
+        }
+    </script>
+</head>
+<body>
+    
+
+
+    <!-- Theme Toggle -->
+    <button id="theme-toggle" class="theme-btn" title="Toggle Theme">
+        <i class="fa-solid fa-moon"></i>
+    </button>
+
+    <!-- Main App Container -->
+    <div id="app-container">
+        
+        <!-- Screen 1: Welcome -->
+        <div id="screen-welcome" class="screen active">
+            <div class="card fade-in">
+                <div class="icon-container mb-4">
+                    <i class="fa-solid fa-road-circle-check text-5xl"></i>
+                </div>
+                <h1 class="title text-glow">Welcome to Traffic Survey</h1>
+                <p class="subtitle mt-2">Thank you for Collaborating</p>
+                <button id="btn-next" class="btn-primary mt-8 pulse-anim">
+                    Next <i class="fa-solid fa-arrow-right ml-2"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Screen 2: Setup -->
+        <div id="screen-setup" class="screen">
+            <div class="card slide-up">
+                <h2 class="title text-glow mb-6">Survey Configuration</h2>
+                
+                <div class="form-group">
+                    <label for="surveyor-name"><i class="fa-solid fa-user text-accent mr-2"></i> Surveyor Name</label>
+                    <input type="text" id="surveyor-name" placeholder="Enter your name" autocomplete="off">
+                </div>
+
+                <div class="form-group">
+                    <label for="location-name"><i class="fa-solid fa-map-pin text-accent mr-2"></i> Location</label>
+                    <input type="text" id="location-name" placeholder="Enter location description" autocomplete="off">
+                </div>
+
+                <div class="form-group location-group">
+                    <button id="btn-gps" class="btn-secondary w-full">
+                        <i class="fa-solid fa-location-crosshairs mr-2"></i> Share Location
+                    </button>
+                    <p id="gps-status" class="status-text mt-2 text-sm text-center hidden">Getting coordinates...</p>
+                </div>
+
+                <div class="form-group">
+                    <label for="location-number"><i class="fa-solid fa-hashtag text-accent mr-2"></i> Location Number</label>
+                    <select id="location-number">
+                        <option value="" disabled selected>Select number</option>
+                        <script>
+                            for(let i=1; i<=15; i++) {
+                                document.write(`<option value="${i}">${i}</option>`);
+                            }
+                        </script>
+                    </select>
+                </div>
+
+                <button id="btn-start" class="btn-primary w-full mt-4 btn-disabled">
+                    Start Survey <i class="fa-solid fa-play ml-2"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Screen 3: Survey -->
+        <div id="screen-survey" class="screen">
+            
+            <div class="survey-header">
+                <div class="status-indicator">
+                    <span id="network-dot" class="dot online"></span>
+                    <span id="sync-status">Online (Synced)</span>
+                </div>
+            </div>
+
+            <!-- Main Survey Layout -->
+            <div class="survey-layout">
+                
+                <!-- Galle Direction -->
+                <div class="direction-section">
+                    <h2 class="direction-title galle-color"><i class="fa-solid fa-arrow-up"></i> Galle Direction</h2>
+                    <div class="action-columns">
+                        
+                        <!-- Stop Column -->
+                        <div class="action-col">
+                            <h3 class="action-title stop-color"><i class="fa-solid fa-hand"></i> Stop</h3>
+                            <div class="vehicles-grid">
+                                <button class="vehicle-btn" data-type="Motor Bike" data-dir="Galle Direction" data-action="Stop">
+                                    <i class="fa-solid fa-motorcycle"></i><span>Motor Bike</span>
+                                </button>
+                                <button class="vehicle-btn" data-type="Tuk Tuk" data-dir="Galle Direction" data-action="Stop">
+                                    <!-- Tuk Tuk Icon -->
+                                    <svg viewBox="0 0 24 24" width="1em" height="1em" fill="currentColor"><path d="M19,8H16V6c0-1.1-.9-2-2-2H6C4.9,4,4,4.9,4,6v6h1v1.5c0,.83.67,1.5,1.5,1.5S8,14.33,8,13.5V13h8v.5c0,.83.67,1.5,1.5,1.5s1.5-.67,1.5-1.5V12h1V8zM6,6h8v2H6V6zM7.5,13C7.22,13,7,12.78,7,12.5V12h1v.5C8,12.78,7.78,13,7.5,13zM14,10H6V9h8V10z M17.5,13c-.28,0-.5-.22-.5-.5V12h1v.5C18,12.78,17.78,13,17.5,13z"/></svg>
+                                    <span>Tuk Tuk</span>
+                                </button>
+                                <button class="vehicle-btn" data-type="Car" data-dir="Galle Direction" data-action="Stop">
+                                    <i class="fa-solid fa-car-side"></i><span>Car</span>
+                                </button>
+                                <button class="vehicle-btn" data-type="Van" data-dir="Galle Direction" data-action="Stop">
+                                    <i class="fa-solid fa-van-shuttle"></i><span>Van</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Go Column -->
+                        <div class="action-col">
+                            <h3 class="action-title go-color"><i class="fa-solid fa-arrow-right-arrow-left"></i> Go</h3>
+                            <div class="vehicles-grid">
+                                <button class="vehicle-btn" data-type="Motor Bike" data-dir="Galle Direction" data-action="Go">
+                                    <i class="fa-solid fa-motorcycle"></i><span>Motor Bike</span>
+                                </button>
+                                <button class="vehicle-btn" data-type="Tuk Tuk" data-dir="Galle Direction" data-action="Go">
+                                    <!-- Tuk Tuk Icon -->
+                                    <svg viewBox="0 0 24 24" width="1em" height="1em" fill="currentColor"><path d="M19,8H16V6c0-1.1-.9-2-2-2H6C4.9,4,4,4.9,4,6v6h1v1.5c0,.83.67,1.5,1.5,1.5S8,14.33,8,13.5V13h8v.5c0,.83.67,1.5,1.5,1.5s1.5-.67,1.5-1.5V12h1V8zM6,6h8v2H6V6zM7.5,13C7.22,13,7,12.78,7,12.5V12h1v.5C8,12.78,7.78,13,7.5,13zM14,10H6V9h8V10z M17.5,13c-.28,0-.5-.22-.5-.5V12h1v.5C18,12.78,17.78,13,17.5,13z"/></svg>
+                                    <span>Tuk Tuk</span>
+                                </button>
+                                <button class="vehicle-btn" data-type="Car" data-dir="Galle Direction" data-action="Go">
+                                    <i class="fa-solid fa-car-side"></i><span>Car</span>
+                                </button>
+                                <button class="vehicle-btn" data-type="Van" data-dir="Galle Direction" data-action="Go">
+                                    <i class="fa-solid fa-van-shuttle"></i><span>Van</span>
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Vertical Divider -->
+                <div class="layout-divider"></div>
+
+                <!-- Juulgaha Direction -->
+                <div class="direction-section">
+                    <h2 class="direction-title juulgaha-color"><i class="fa-solid fa-arrow-down"></i> Juulgaha Direction</h2>
+                    <div class="action-columns">
+                        
+                        <!-- Stop Column -->
+                        <div class="action-col">
+                            <h3 class="action-title stop-color"><i class="fa-solid fa-hand"></i> Stop</h3>
+                            <div class="vehicles-grid">
+                                <button class="vehicle-btn" data-type="Motor Bike" data-dir="Juulgaha Direction" data-action="Stop">
+                                    <i class="fa-solid fa-motorcycle"></i><span>Motor Bike</span>
+                                </button>
+                                <button class="vehicle-btn" data-type="Tuk Tuk" data-dir="Juulgaha Direction" data-action="Stop">
+                                    <svg viewBox="0 0 24 24" width="1em" height="1em" fill="currentColor"><path d="M19,8H16V6c0-1.1-.9-2-2-2H6C4.9,4,4,4.9,4,6v6h1v1.5c0,.83.67,1.5,1.5,1.5S8,14.33,8,13.5V13h8v.5c0,.83.67,1.5,1.5,1.5s1.5-.67,1.5-1.5V12h1V8zM6,6h8v2H6V6zM7.5,13C7.22,13,7,12.78,7,12.5V12h1v.5C8,12.78,7.78,13,7.5,13zM14,10H6V9h8V10z M17.5,13c-.28,0-.5-.22-.5-.5V12h1v.5C18,12.78,17.78,13,17.5,13z"/></svg>
+                                    <span>Tuk Tuk</span>
+                                </button>
+                                <button class="vehicle-btn" data-type="Car" data-dir="Juulgaha Direction" data-action="Stop">
+                                    <i class="fa-solid fa-car-side"></i><span>Car</span>
+                                </button>
+                                <button class="vehicle-btn" data-type="Van" data-dir="Juulgaha Direction" data-action="Stop">
+                                    <i class="fa-solid fa-van-shuttle"></i><span>Van</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Go Column -->
+                        <div class="action-col">
+                            <h3 class="action-title go-color"><i class="fa-solid fa-arrow-right-arrow-left"></i> Go</h3>
+                            <div class="vehicles-grid">
+                                <button class="vehicle-btn" data-type="Motor Bike" data-dir="Juulgaha Direction" data-action="Go">
+                                    <i class="fa-solid fa-motorcycle"></i><span>Motor Bike</span>
+                                </button>
+                                <button class="vehicle-btn" data-type="Tuk Tuk" data-dir="Juulgaha Direction" data-action="Go">
+                                    <svg viewBox="0 0 24 24" width="1em" height="1em" fill="currentColor"><path d="M19,8H16V6c0-1.1-.9-2-2-2H6C4.9,4,4,4.9,4,6v6h1v1.5c0,.83.67,1.5,1.5,1.5S8,14.33,8,13.5V13h8v.5c0,.83.67,1.5,1.5,1.5s1.5-.67,1.5-1.5V12h1V8zM6,6h8v2H6V6zM7.5,13C7.22,13,7,12.78,7,12.5V12h1v.5C8,12.78,7.78,13,7.5,13zM14,10H6V9h8V10z M17.5,13c-.28,0-.5-.22-.5-.5V12h1v.5C18,12.78,17.78,13,17.5,13z"/></svg>
+                                    <span>Tuk Tuk</span>
+                                </button>
+                                <button class="vehicle-btn" data-type="Car" data-dir="Juulgaha Direction" data-action="Go">
+                                    <i class="fa-solid fa-car-side"></i><span>Car</span>
+                                </button>
+                                <button class="vehicle-btn" data-type="Van" data-dir="Juulgaha Direction" data-action="Go">
+                                    <i class="fa-solid fa-van-shuttle"></i><span>Van</span>
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+            
+            <!-- Click visual feedback element -->
+            <div id="click-feedback" class="click-feedback"></div>
+        </div>
+
+    </div>
+
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js').then(reg => {
+                    console.log('SW registered:', reg.scope);
+                }).catch(err => {
+                    console.log('SW registration failed:', err);
+                });
+            });
+        }
+    </script>
+    <script src="app.js"></script>
+</body>
+</html>
+
+
+
+

@@ -1,0 +1,22 @@
+{
+  "name": "Traffic Survey App",
+  "short_name": "Traffic App",
+  "description": "App for collecting traffic survey data.",
+  "start_url": "/",
+  "display": "fullscreen",
+  "background_color": "#0f172a",
+  "theme_color": "#3b82f6",
+  "orientation": "landscape",
+  "icons": [
+    {
+      "src": "https://via.placeholder.com/192.png?text=Traffic",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://via.placeholder.com/512.png?text=Traffic",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Master Traffic Survey App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#3b82f6">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <div id="app-container">
+        
+        <!-- Welcome Screen -->
+        <section id="welcome-screen" class="screen active">
+            <div class="glass-card welcome-card">
+                <div class="icon-pulse">
+                    <i class="fa-solid fa-chart-line"></i>
+                </div>
+                <h1>Welcome to Traffic Survey</h1>
+                <p>Select your module to begin data collection.</p>
+                <button id="btn-next" class="primary-btn pulse-on-hover">
+                    Next <i class="fa-solid fa-arrow-right"></i>
+                </button>
+                <div style="margin-top: 1rem;">
+                    <a href="#" id="btn-admin-portal" style="color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">
+                        <i class="fa-solid fa-user-shield"></i> Researcher / Admin Access
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Admin Screen -->
+        <section id="admin-screen" class="screen hidden">
+            <div class="glass-card setup-card">
+                <h2>Admin Portal</h2>
+                
+                <div class="admin-tabs" style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
+                    <button type="button" id="tab-login" class="secondary-btn" style="flex: 1; border-color: var(--accent-primary); color: white; background: var(--accent-primary);">Login</button>
+                    <button type="button" id="tab-create" class="secondary-btn" style="flex: 1;">Create Account</button>
+                </div>
+                
+                <p id="admin-desc" style="margin-bottom: 1rem; color: var(--text-secondary);">Enter your email and password to retrieve your existing Admin ID and Spreadsheet link.</p>
+                
+                <form id="admin-form">
+                    
+                    <!-- Create Account Only Fields -->
+                    <div id="create-fields" style="display: none;">
+                        <div class="form-group">
+                            <label for="admin-name">Full Name</label>
+                            <input type="text" id="admin-name" placeholder="John Doe">
+                        </div>
+                        <div class="form-group">
+                            <label for="admin-institute">Institute / University</label>
+                            <input type="text" id="admin-institute" placeholder="Oxford University">
+                        </div>
+                        <div class="form-group">
+                            <label for="admin-country">Country</label>
+                            <input type="text" id="admin-country" placeholder="United Kingdom">
+                        </div>
+                    </div>
+
+                    <!-- Common Fields -->
+                    <div class="form-group">
+                        <label for="admin-email">Your Email Address</label>
+                        <input type="email" id="admin-email" required placeholder="researcher@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="admin-password">Password</label>
+                        <div style="position: relative;">
+                            <input type="password" id="admin-password" required placeholder="Min 8 characters" style="width: 100%; padding-right: 2.5rem;">
+                            <i class="fa-solid fa-eye toggle-password" data-target="admin-password" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--text-secondary);"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group" id="confirm-password-group" style="display: none;">
+                        <label for="admin-password-confirm">Confirm Password</label>
+                        <div style="position: relative;">
+                            <input type="password" id="admin-password-confirm" placeholder="Re-enter password" style="width: 100%; padding-right: 2.5rem;">
+                            <i class="fa-solid fa-eye toggle-password" data-target="admin-password-confirm" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--text-secondary);"></i>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="btn-submit-admin" class="primary-btn">
+                        Login <i class="fa-solid fa-right-to-bracket"></i>
+                    </button>
+                    <button type="button" id="btn-forgot-password" style="background: none; border: none; color: var(--accent-primary); margin-top: 0.5rem; cursor: pointer; text-decoration: underline; font-size: 0.9rem;">
+                        Forgot Password?
+                    </button>
+                    <button type="button" id="btn-admin-back" class="secondary-btn" style="margin-top: 1rem;">
+                        <i class="fa-solid fa-arrow-left"></i> Back
+                    </button>
+                </form>
+
+                <!-- Password Reset Form -->
+                <form id="reset-form" style="display: none;">
+                    <h2 style="margin-bottom: 1rem; color: var(--text-primary); text-align: center;">Reset Password</h2>
+                    
+                    <div id="reset-step-1">
+                        <p style="margin-bottom: 1rem; color: var(--text-secondary); text-align: center;">Enter your registered email address to receive a reset code.</p>
+                        <div class="form-group">
+                            <label for="reset-email">Email Address</label>
+                            <input type="email" id="reset-email" required placeholder="example@institute.edu">
+                        </div>
+                        <button type="button" id="btn-reset-request" class="primary-btn">Send Reset Code <i class="fa-regular fa-paper-plane"></i></button>
+                    </div>
+                    
+                    <div id="reset-step-2" style="display: none;">
+                        <p style="margin-bottom: 1rem; color: var(--text-secondary); text-align: center;">Enter the 6-digit code sent to your email.</p>
+                        <div class="form-group">
+                            <label for="reset-otp">Verification Code</label>
+                            <input type="text" id="reset-otp" placeholder="e.g. 123456" maxlength="6" pattern="\d{6}" style="letter-spacing: 5px; font-size: 1.5rem; text-align: center;">
+                        </div>
+                        <div class="form-group">
+                            <label for="reset-new-password">New Password</label>
+                            <div style="position: relative;">
+                                <input type="password" id="reset-new-password" placeholder="Min 8 characters" style="width: 100%; padding-right: 2.5rem;">
+                                <i class="fa-solid fa-eye toggle-password" data-target="reset-new-password" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--text-secondary);"></i>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="reset-confirm-password">Confirm New Password</label>
+                            <div style="position: relative;">
+                                <input type="password" id="reset-confirm-password" placeholder="Retype new password" style="width: 100%; padding-right: 2.5rem;">
+                                <i class="fa-solid fa-eye toggle-password" data-target="reset-confirm-password" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--text-secondary);"></i>
+                            </div>
+                        </div>
+                        <button type="button" id="btn-reset-submit" class="primary-btn">Update Password <i class="fa-solid fa-lock"></i></button>
+                    </div>
+
+                    <button type="button" id="btn-reset-back" class="secondary-btn" style="margin-top: 1rem;">
+                        <i class="fa-solid fa-arrow-left"></i> Back to Login
+                    </button>
+                </form>
+
+                <!-- OTP Verification Form -->
+                <form id="otp-form" style="display: none;">
+                    <p style="margin-bottom: 1rem; color: var(--text-primary);">A 6-digit verification code has been sent to your email.</p>
+                    <div class="form-group">
+                        <label for="otp-code">Verification Code</label>
+                        <input type="text" id="otp-code" required placeholder="e.g. 123456" maxlength="6" pattern="\d{6}" style="letter-spacing: 5px; font-size: 1.5rem; text-align: center;">
+                    </div>
+                    <button type="submit" id="btn-verify-otp" class="primary-btn">
+                        Verify & Create Account <i class="fa-solid fa-check"></i>
+                    </button>
+                    <button type="button" id="btn-otp-cancel" class="secondary-btn" style="margin-top: 1rem;">
+                        Cancel
+                    </button>
+                </form>
+                
+                <div id="admin-result" style="display: none; margin-top: 1.5rem; padding: 1rem; background: rgba(16, 185, 129, 0.1); border: 1px solid #10b981; border-radius: 8px;">
+                    <h3 style="color: #10b981; margin-bottom: 0.5rem;" id="admin-result-title">Success!</h3>
+                    <p>Your surveyors should use this Admin ID:</p>
+                    <div style="font-size: 2rem; font-weight: bold; margin: 0.5rem 0; letter-spacing: 2px;" id="display-admin-id">ADM-0000</div>
+                    <p style="margin-bottom: 1rem;" id="admin-result-desc">A Google Sheet has been shared with your email.</p>
+                                        <a href="#" id="admin-sheet-link" target="_blank" class="primary-btn" style="text-decoration: none; display: inline-block;">
+                        Open Google Sheet <i class="fa-solid fa-external-link"></i>
+                    </a>
+
+                    <!-- Admin Configuration Dashboard -->
+                    <div id="admin-config-dashboard" style="margin-top: 2rem; text-align: left; background: rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--glass-border);">
+                        <h4 style="margin-bottom: 1rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 0.5rem;"><i class="fa-solid fa-gear"></i> Survey Settings Configuration</h4>
+                        <form id="config-form">
+                            <div class="form-group" style="margin-bottom: 1rem;">
+                                <label style="font-size: 0.85rem;">Total Number of Locations (e.g. 5)</label>
+                                <input type="number" id="config-locations-count" placeholder="Enter a number (e.g. 5) or leave blank" min="1">
+                                <small style="color: var(--text-secondary); display: block; margin-top: 0.25rem;">This will automatically generate locations 1, 2, 3...</small>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 1rem;">
+                                <label style="font-size: 0.85rem;">Main Road Directions (In, Out)</label>
+                                <div style="display: flex; gap: 0.5rem;">
+                                    <input type="text" id="config-mr-in" placeholder="In Name" value="In">
+                                    <input type="text" id="config-mr-out" placeholder="Out Name" value="Out">
+                                </div>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 1rem;">
+                                <label style="font-size: 0.85rem;">Roundabout / T-Junction Directions</label>
+                                <div style="display: flex; gap: 0.5rem;">
+                                    <input type="text" id="config-rt-d1" placeholder="Direction 1" value="Direction 1">
+                                    <input type="text" id="config-rt-d2" placeholder="Direction 2" value="Direction 2">
+                                </div>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 1rem;">
+                                <label style="font-size: 0.85rem;">Institutional Idling Directions</label>
+                                <div style="display: flex; gap: 0.5rem;">
+                                    <input type="text" id="config-ii-d1" placeholder="Direction 1" value="Galle Direction">
+                                    <input type="text" id="config-ii-d2" placeholder="Direction 2" value="Juulgaha Direction">
+                                </div>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 1rem;">
+                                <label style="font-size: 0.85rem;">Bus Routes (Comma separated)</label>
+                                <input type="text" id="config-bus" placeholder="e.g. Route A, Route B">
+                            </div>
+                            <button type="submit" id="btn-save-config" class="primary-btn" style="padding: 0.6rem; font-size: 0.9rem;">
+                                Save Configurations <i class="fa-solid fa-save"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Setup Screen -->
+        <section id="setup-screen" class="screen hidden">
+            <div class="glass-card setup-card">
+                <h2>Survey Setup</h2>
+                <form id="setup-form">
+                    
+                    <div class="form-group">
+                        <label for="survey-type">Survey Type</label>
+                        <select id="survey-type" required>
+                            <option value="" disabled selected>Select Survey Type...</option>
+                            <option value="main-road">Main Road</option>
+                            <option value="roundabout">Roundabout (Round the board)</option>
+                            <option value="t-junction">T-Junction</option>
+                            <option value="pedestrian">Pedestrian Crossing</option>
+                            <option value="bus-idling">Bus Idling</option>
+                            <option value="institutional-idling">Institutional Idling</option>
+                        </select>
+                    </div>
+
+                                        <div class="form-group">
+                        <label for="admin-id">Admin ID</label>
+                        <div class="input-with-button" style="display: flex; gap: 0.5rem;">
+                            <input type="text" id="admin-id" required placeholder="e.g. ADM-1234" style="flex: 1;">
+                            <button type="button" id="btn-load-settings" class="secondary-btn" style="white-space: nowrap;">Load</button>
+                        </div>
+                        <small style="color: var(--text-secondary); display: block; margin-top: 0.25rem;">Enter Admin ID and click Load.</small>
+                    </div>
+                    <div class="form-group" id="location-number-group" style="display: none;">
+                        <label for="location-number">Location Number</label>
+                        <select id="location-number">
+                            <option value="" disabled selected>Select number</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="surveyor-name">Surveyor Name</label>
+                        <input type="text" id="surveyor-name" required placeholder="Enter your name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="location-input">Location</label>
+                        <div class="input-with-button">
+                            <input type="text" id="location-input" required placeholder="Coordinates or Name" readonly>
+                            <button type="button" id="btn-share-location" class="secondary-btn" title="Share Location">
+                                <i class="fa-solid fa-location-crosshairs"></i> Share
+                            </button>
+                        </div>
+                        <small id="location-status" class="status-text"></small>
+                    </div>
+
+
+
+                                        <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                        <button type="button" id="btn-setup-back" class="secondary-btn" style="flex: 1;">
+                            <i class="fa-solid fa-arrow-left"></i> Back
+                        </button>
+                        
+                    <!-- Data Privacy & Local Backup Disclosure -->
+                    <div class="data-privacy-card" style="margin-top: 1.5rem; padding: 1rem; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); border-radius: 0.5rem; text-align: left;">
+                        <h4 style="color: var(--text-primary); font-size: 0.9rem; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.5rem;">
+                            <i class="fa-solid fa-shield-halved" style="color: #10b981;"></i> Data Privacy & Local Backup Notice
+                        </h4>
+                        <p style="font-size: 0.8rem; color: var(--text-secondary); line-height: 1.4; margin-bottom: 0.75rem;">
+                            All survey events recorded on this device are automatically backed up to internal memory (<code style="background: rgba(0,0,0,0.3); padding: 0.1rem 0.3rem; border-radius: 3px;">traffic_survey_secret_backup</code>). Data is retained locally even if offline or server sync is delayed.
+                        </p>
+                        <button type="button" class="secondary-btn btn-export-backup" onclick="exportLocalBackup()" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem; font-size: 0.85rem; padding: 0.5rem; border-color: #10b981; color: #10b981;">
+                            <i class="fa-solid fa-file-arrow-down"></i> Export Local Backup (.json)
+                        </button>
+                    </div>
+
+                    <button type="submit" id="btn-start" class="primary-btn" style="flex: 2;">
+                            Start Survey <i class="fa-solid fa-play"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+        
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container"></div>
+
+    <script src="app.js"></script>
+    
+</body>
+</html>
+
+
+
+
+
+
+

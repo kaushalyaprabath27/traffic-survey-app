@@ -1,0 +1,21 @@
+node_modules/
+npm-debug.log
+yarn-error.log
+*.log
+
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS metadata
+.DS_Store
+Thumbs.db
+
+# Ignore local backup exports
+traffic_survey_backup_*.json
+traffic_survey_secret_backup.json

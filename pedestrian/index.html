@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Zebra Crossing Survey</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <script>
+        if(window.location.search.includes('skipSetup=true')) {
+            document.write('<style>#welcome-screen, #setup-screen, #screen-welcome, #screen-setup { display: none !important; visibility: hidden !important; }</style>');
+        }
+    </script>
+</head>
+<body>
+    
+
+
+    <!-- Theme Toggle -->
+    <button id="theme-toggle" class="theme-btn" title="Toggle Theme">
+        <i class="fa-solid fa-moon"></i>
+    </button>
+
+    <!-- Main App Container -->
+    <div id="app-container">
+        
+        <!-- Screen 1: Welcome -->
+        <div id="screen-welcome" class="screen active">
+            <div class="card fade-in">
+                <div class="icon-container mb-4">
+                    <i class="fa-solid fa-person-walking text-5xl"></i>
+                </div>
+                <h1 class="title text-glow">Zebra Crossing Survey</h1>
+                <p class="subtitle mt-2">Thank you for Collaborating</p>
+                <button id="btn-next" class="btn-primary mt-8 pulse-anim">
+                    Next <i class="fa-solid fa-arrow-right ml-2"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Screen 2: Setup -->
+        <div id="screen-setup" class="screen">
+            <div class="card slide-up">
+                <h2 class="title text-glow mb-6">Survey Configuration</h2>
+                
+                <div class="form-group">
+                    <label for="surveyor-name"><i class="fa-solid fa-user text-accent mr-2"></i> Surveyor Name</label>
+                    <input type="text" id="surveyor-name" placeholder="Enter your name" autocomplete="off">
+                </div>
+
+                <div class="form-group">
+                    <label for="location-name"><i class="fa-solid fa-map-pin text-accent mr-2"></i> Location</label>
+                    <input type="text" id="location-name" placeholder="Enter location description" autocomplete="off">
+                </div>
+
+                <div class="form-group location-group">
+                    <button id="btn-gps" class="btn-secondary w-full">
+                        <i class="fa-solid fa-location-crosshairs mr-2"></i> Share Location
+                    </button>
+                    <p id="gps-status" class="status-text mt-2 text-sm text-center hidden">Getting coordinates...</p>
+                </div>
+
+                <div class="form-group">
+                    <label for="location-number"><i class="fa-solid fa-hashtag text-accent mr-2"></i> Location Number</label>
+                    <select id="location-number">
+                        <option value="" disabled selected>Select number</option>
+                        <option value="C1">C1</option>
+                        <option value="C2">C2</option>
+                        <option value="C3">C3</option>
+                        <option value="C4">C4</option>
+                        <option value="C5">C5</option>
+                        <option value="C6">C6</option>
+                    </select>
+                </div>
+
+                <button id="btn-start" class="btn-primary w-full mt-4 btn-disabled">
+                    Continue <i class="fa-solid fa-play ml-2"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Screen 3: Survey -->
+        <div id="screen-survey" class="screen">
+            
+            <div class="survey-header">
+                <div class="status-indicator">
+                    <span id="network-dot" class="dot online"></span>
+                    <span id="sync-status">Online (Synced)</span>
+                </div>
+            </div>
+
+            <!-- Main Survey Layout -->
+            <div class="survey-layout">
+                
+                <!-- Top Control Bar -->
+                <div class="control-bar">
+                    <button id="btn-action" class="action-btn start-mode">
+                        <i class="fa-solid fa-play"></i> START CROSSING
+                    </button>
+                    <div id="timer-display" class="timer">00:00</div>
+                </div>
+
+                <!-- Counting Area -->
+                <div class="counting-area">
+                    
+                    <!-- IN Column -->
+                    <div class="count-col in-col disabled" id="in-section">
+                        <h2 class="col-title"><i class="fa-solid fa-arrow-down-long"></i> IN</h2>
+                        <div class="counter-widget">
+                            <button class="count-btn minus-btn" data-dir="in"><i class="fa-solid fa-minus"></i></button>
+                            <div class="count-display" id="count-in">0</div>
+                            <button class="count-btn plus-btn" data-dir="in"><i class="fa-solid fa-plus"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="layout-divider"></div>
+
+                    <!-- OUT Column -->
+                    <div class="count-col out-col disabled" id="out-section">
+                        <h2 class="col-title"><i class="fa-solid fa-arrow-up-long"></i> OUT</h2>
+                        <div class="counter-widget">
+                            <button class="count-btn minus-btn" data-dir="out"><i class="fa-solid fa-minus"></i></button>
+                            <div class="count-display" id="count-out">0</div>
+                            <button class="count-btn plus-btn" data-dir="out"><i class="fa-solid fa-plus"></i></button>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+            
+            <!-- Click visual feedback element -->
+            <div id="click-feedback" class="click-feedback"></div>
+        </div>
+
+    </div>
+
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js').then(reg => {
+                    console.log('SW registered:', reg.scope);
+                }).catch(err => {
+                    console.log('SW registration failed:', err);
+                });
+            });
+        }
+    </script>
+    <script src="app.js"></script>
+</body>
+</html>
+
+
+

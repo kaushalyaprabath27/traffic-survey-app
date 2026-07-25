@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Bus Idling Survey</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f172a">
+    <script>
+        if(window.location.search.includes('skipSetup=true')) {
+            document.write('<style>#welcome-screen, #setup-screen, #screen-welcome, #screen-setup { display: none !important; visibility: hidden !important; }</style>');
+        }
+    </script>
+</head>
+<body>
+    
+
+    <div id="app">
+        <!-- Top Bar -->
+        <header class="app-header">
+            <div class="logo">
+                <i class="fa-solid fa-bus"></i>
+                <span>Bus Idling Survey</span>
+            </div>
+            <div class="header-controls">
+                <div class="status-indicator" id="onlineStatus">
+                    <span class="status-dot"></span>
+                    <span class="status-text">Online</span>
+                </div>
+                <div class="queue-counter hidden" id="queueCounter">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                    <span id="queueCount">0</span>
+                </div>
+                <button class="icon-btn" id="themeToggle" aria-label="Toggle Theme">
+                    <i class="fa-solid fa-moon"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- SCREEN 1: Welcome -->
+        <main id="welcome-screen" class="screen active">
+            <div class="welcome-container">
+                <div class="welcome-icon">
+                    <i class="fa-solid fa-clipboard-check"></i>
+                </div>
+                <h1>Bus Idling Survey</h1>
+                <p>Data Collection Application</p>
+                <div class="features">
+                    <div class="feature-tag"><i class="fa-solid fa-wifi"></i> Offline Ready</div>
+                    <div class="feature-tag"><i class="fa-solid fa-bolt"></i> Fast Entry</div>
+                    <div class="feature-tag"><i class="fa-solid fa-stopwatch"></i> Idling Timer</div>
+                </div>
+                <button class="primary-btn pulse" id="startAppBtn">
+                    Get Started <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </main>
+
+        <!-- SCREEN 2: Setup -->
+        <main id="setup-screen" class="screen">
+            <div class="setup-container">
+                <div class="screen-header">
+                    <h2><i class="fa-solid fa-gear"></i> Survey Setup</h2>
+                    <p>Enter your details to begin</p>
+                </div>
+                
+                <form id="setupForm" class="setup-form">
+                    <div class="form-group">
+                        <label for="surveyorName"><i class="fa-solid fa-user"></i> Surveyor Name</label>
+                        <input type="text" id="surveyorName" placeholder="Enter your full name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="locationSelect"><i class="fa-solid fa-location-dot"></i> Location Number</label>
+                        <div class="custom-select-wrapper">
+                            <select id="locationSelect" required>
+                                <option value="" disabled selected>Select Location...</option>
+                                <option value="C1">C1</option>
+                                <option value="C2">C2</option>
+                                <option value="C3">C3</option>
+                                <option value="C4">C4</option>
+                                <option value="C5">C5</option>
+                                <option value="C6">C6</option>
+                                <option value="C7">C7</option>
+                                <option value="C8">C8</option>
+                                <option value="C9">C9</option>
+                                <option value="C10">C10</option>
+                            </select>
+                            <i class="fa-solid fa-chevron-down select-icon"></i>
+                        </div>
+                    </div>
+
+                    <div class="gps-section">
+                        <div class="gps-header">
+                            <div>
+                                <h3><i class="fa-solid fa-satellite-dish"></i> GPS Coordinates</h3>
+                                <p>Required for accurate location tracking</p>
+                            </div>
+                            <button type="button" class="icon-btn outline" id="getGpsBtn" aria-label="Get GPS">
+                                <i class="fa-solid fa-location-crosshairs"></i>
+                            </button>
+                        </div>
+                        <div class="gps-status" id="gpsStatusBox">
+                            <span class="status-dot warning"></span>
+                            <span id="gpsStatusText">GPS not acquired</span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="primary-btn large" id="beginSurveyBtn" disabled>
+                        Begin Survey <i class="fa-solid fa-play"></i>
+                    </button>
+                </form>
+            </div>
+        </main>
+
+        <!-- SCREEN 3: Survey -->
+        <main id="survey-screen" class="screen">
+                        <div class="survey-header-info" style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+                <a href="../index.html" class="home-btn" style="text-decoration: none; color: white; background: rgba(255,255,255,0.1); padding: 0.2rem 0.8rem; border-radius: 0.5rem; display: flex; align-items: center; gap: 0.5rem;"><i class="fa-solid fa-arrow-left" style="color: white; margin: 0;"></i> Home</a>
+                <div class="info-badge"><i class="fa-solid fa-user"></i> <span id="displaySurveyor"></span></div>
+                <div class="info-badge"><i class="fa-solid fa-location-dot"></i> <span id="displayLocation"></span></div>
+                <div class="info-badge"><i class="fa-solid fa-user-tie"></i> Admin Name: <span id="displayAdminName"></span></div>
+                <div class="info-badge"><i class="fa-solid fa-hashtag"></i> Admin: <span id="displayAdminId"></span></div>
+            </div>
+
+            <!-- Route Selection -->
+            <div class="route-section panel">
+                <h3><i class="fa-solid fa-route"></i> Bus Route</h3>
+                <div class="custom-select-wrapper">
+                    <select id="routeSelect">
+                        <option value="" disabled selected>Select Bus Route...</option>
+                        <option value="Karapitiya – Galle">Karapitiya – Galle</option>
+                        <option value="Galle – Karapitiya">Galle – Karapitiya</option>
+                        <option value="Wackwella – Galle">Wackwella – Galle</option>
+                        <option value="Galle – Wackwella">Galle – Wackwella</option>
+                        <option value="Baddegama – Galle via Wackwella">Baddegama – Galle via Wackwella</option>
+                        <option value="Galle – Baddegama via Wackwella">Galle – Baddegama via Wackwella</option>
+                        <option value="Gintota – Galle">Gintota – Galle</option>
+                        <option value="Galle – Gintota">Galle – Gintota</option>
+                        <option value="Other">Other (Specify)</option>
+                    </select>
+                    <i class="fa-solid fa-chevron-down select-icon"></i>
+                </div>
+                <div class="form-group hidden mt-10" id="customRouteGroup">
+                    <input type="text" id="customRoute" placeholder="Enter custom bus route">
+                </div>
+            </div>
+
+            <!-- Timer Section -->
+            <div class="timer-section panel">
+                <h3><i class="fa-solid fa-stopwatch"></i> Idling Time</h3>
+                <div class="timer-display" id="timerDisplay">00:00</div>
+                <button class="primary-btn large timer-btn" id="toggleTimerBtn">
+                    <i class="fa-solid fa-play"></i> START IDLING
+                </button>
+            </div>
+
+            <!-- Passenger Counters -->
+            <div class="counters-grid">
+                <!-- Getting Off -->
+                <div class="counter-panel panel off-panel">
+                    <h3><i class="fa-solid fa-arrow-right-from-bracket"></i> Getting Off</h3>
+                    <div class="counter-controls">
+                        <button class="counter-btn minus" data-target="offCount"><i class="fa-solid fa-minus"></i></button>
+                        <div class="counter-value" id="offCount">0</div>
+                        <button class="counter-btn plus" data-target="offCount"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                </div>
+                
+                <!-- Getting On -->
+                <div class="counter-panel panel on-panel">
+                    <h3><i class="fa-solid fa-arrow-right-to-bracket"></i> Getting On</h3>
+                    <div class="counter-controls">
+                        <button class="counter-btn minus" data-target="onCount"><i class="fa-solid fa-minus"></i></button>
+                        <div class="counter-value" id="onCount">0</div>
+                        <button class="counter-btn plus" data-target="onCount"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Save Section -->
+            <div class="save-section">
+                <button class="primary-btn massive submit-btn" id="saveRecordBtn">
+                    <i class="fa-solid fa-floppy-disk"></i> SAVE & NEXT BUS
+                </button>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
+
+
+
