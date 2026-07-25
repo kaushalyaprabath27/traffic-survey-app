@@ -61,6 +61,21 @@ function handleRequest(e) {
     
     const action = data.action;
     
+    // Identify Admin ID for rate limiting and sanity check
+    let adminIdToCheck = data.adminId;
+    if (action === "submit_batch" && data.payload && data.payload.length > 0) {
+      adminIdToCheck = data.payload[0].adminId;
+    }
+    
+    if (adminIdToCheck) {
+      if (!isValidAdminId(adminIdToCheck)) {
+        return responseJson({status: "error", message: "Unauthorized: Invalid Admin ID."});
+      }
+      if (!checkRateLimit(adminIdToCheck)) {
+        return responseJson({status: "error", message: "Rate limit exceeded. Please wait."});
+      }
+    }
+    
     if (action === "request_otp") {
       return handleRequestOTP(data);
     } else if (action === "verify_otp") {
@@ -187,6 +202,7 @@ function handleVerifyOTP(data) {
   try { MailApp.sendEmail(email, subject, body); } catch(e) {}
   
   cache.remove(email);
+  cache.remove("valid_admin_ids"); // Invalidate ID cache so the new admin is recognized
   
   return responseJson({
     status: "success",
@@ -448,5 +464,46 @@ function handleGetConfig(data) {
 
 
 function responseJson(obj) {
-  return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
+  return ContentService.createTextOutput(JSON.stringify(obj))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+// --- SECURITY & RATE LIMITING ---
+
+function checkRateLimit(adminId) {
+  if (!adminId) return true;
+  const cache = CacheService.getScriptCache();
+  const key = "rate_" + adminId;
+  const countStr = cache.get(key);
+  let count = countStr ? parseInt(countStr, 10) : 0;
+  
+  if (count >= 300) {
+    return false; // Exceeded 300 requests per minute
+  }
+  
+  cache.put(key, (count + 1).toString(), 60); // 60 seconds rolling window
+  return true;
+}
+
+function isValidAdminId(adminId) {
+  if (!adminId) return true; 
+  const cache = CacheService.getScriptCache();
+  const cachedIds = cache.get("valid_admin_ids");
+  
+  let validIds;
+  if (cachedIds) {
+    validIds = JSON.parse(cachedIds);
+  } else {
+    // Cache miss, rebuild
+    const ss = getRegistrySpreadsheet();
+    const sheet = ss.getSheetByName(REGISTRY_SHEET_NAME);
+    const dataRange = sheet.getDataRange().getValues();
+    validIds = [];
+    for (let i = 1; i < dataRange.length; i++) {
+      if (dataRange[i][6]) validIds.push(dataRange[i][6]);
+    }
+    cache.put("valid_admin_ids", JSON.stringify(validIds), 21600); // 6 hours
+  }
+  
+  return validIds.includes(adminId);
 }
