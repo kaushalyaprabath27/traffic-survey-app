@@ -1,6 +1,14 @@
 // Master App Setup Logic
 const MASTER_APPS_SCRIPT_URL = window.ENV_APPS_SCRIPT_URL || 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE';
 
+setTimeout(() => {
+    const urlToCheck = (typeof APPS_SCRIPT_URL !== 'undefined') ? APPS_SCRIPT_URL : ((typeof MASTER_APPS_SCRIPT_URL !== 'undefined') ? MASTER_APPS_SCRIPT_URL : '');
+    if (urlToCheck === 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE') {
+        if(typeof showToast === 'function') showToast('WARNING: Apps Script URL not configured. Data will not sync.', 'error');
+    }
+}, 500);
+
+
 const screens = {
     welcome: document.getElementById('welcome-screen'),
     setup: document.getElementById('setup-screen'),
