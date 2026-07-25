@@ -51,6 +51,10 @@ function doOptions(e) {
 }
 
 function handleRequest(e) {
+  if (!checkGlobalRateLimit()) {
+    return responseJson({status: "error", message: "Global rate limit exceeded (Too Many Requests). Please try again later."});
+  }
+
   try {
     const params = e.parameter;
     let data = {};
@@ -469,6 +473,20 @@ function responseJson(obj) {
 }
 
 // --- SECURITY & RATE LIMITING ---
+
+function checkGlobalRateLimit() {
+  const cache = CacheService.getScriptCache();
+  const key = "global_rate_limit";
+  const countStr = cache.get(key);
+  let count = countStr ? parseInt(countStr, 10) : 0;
+  
+  if (count >= 300) {
+    return false; // Exceeded 300 requests per minute globally
+  }
+  
+  cache.put(key, (count + 1).toString(), 60); // 60 seconds rolling window
+  return true;
+}
 
 function checkRateLimit(adminId) {
   if (!adminId) return true;
