@@ -74,29 +74,33 @@ A persistent `setInterval` loop wakes up every 15,000 milliseconds (15 seconds) 
 By grouping 50 taps into 1 request, server load is mathematically reduced by 98%.
 
 ### D. Empirical Load-Test Quota Evaluation
-To measure the quota-reduction impact, simulated load-tests were conducted against the production backend using an automated Node.js test harness. 
+**Updated with re-measured figures; see `docs/loadtest_results.md` and `tools/loadtest/` for the full method, per-request CSVs, and the reasoning below.** The request counts previously listed here (215 and 283) were never actually reproducible against this backend: 283 requests at a 50-event cap tops out at 14,150 events, 6,080 short of the 20,230 events also claimed alongside it, and the "43.81" average batch size cited with those numbers does not reconcile with either figure (283 x 43.81 = 12,398, not 20,230). The re-measurement below resolves that contradiction with numbers that do reconcile.
 
 **Execution-Time Methodology Note:** 
-Because Google Apps Script deployed as a Web App does not expose real execution metrics via a public API, server-side CPU time cannot be programmatically pulled by the client. The execution times reported below are calculated estimates, derived by multiplying the number of HTTP requests sent by an assumed average processing duration (0.3 seconds per standalone `appendRow` versus 0.25 seconds per bulk `setValues` batch).
+Because Google Apps Script deployed as a Web App does not expose real execution metrics via a public API, server-side CPU time cannot be programmatically pulled by the client. The execution times reported below are calculated estimates, derived by multiplying the number of HTTP requests sent by an assumed average processing duration (0.3 seconds per standalone `appendRow` versus 0.25 seconds per bulk `setValues` batch). This is stated as an estimate, not a measurement, because it is one.
 
-**1. Representative Field Load (6 Surveyors)**
-A 10-minute simulation was run using 6 concurrent virtual surveyors (representing one active surveyor per application module), generating approximately one event per second per surveyor.
-- **Total Vehicle Events Logged:** 3,570 events
+**1. Representative Field Load (6 Surveyors, one per module)**
+A 10-minute simulation was run using 6 concurrent virtual surveyors, generating approximately one event per second per surveyor, against a real deployed backend using an isolated test admin account.
+- **Total Vehicle Events Logged:** 3,570 events (measured)
 - **Unbatched Baseline Requests (Theoretical):** 3,570 requests
-- **Batched HTTP Requests Sent:** 215 requests
-- **Network Overhead Reduction:** 93.98%
-- **Estimated Apps Script Execution Time (Unbatched):** ~17.85 minutes 
-- **Estimated Apps Script Execution Time (Batched):** ~0.90 minutes
+- **Batched HTTP Requests Sent:** 179 requests (measured; average batch size 19.94)
+- **Network Overhead Reduction:** 95.0% (measured)
+- **Zero request failures; exact reconciliation** between events generated and events the backend acknowledges writing.
+- **Estimated Apps Script Execution Time (Unbatched):** ~17.85 minutes (estimate)
+- **Estimated Apps Script Execution Time (Batched):** ~0.75 minutes (estimate)
 
-**2. Worst-Case Stress Test (34 Surveyors)**
-A secondary 10-minute stress test was conducted simulating 34 concurrent surveyors to observe system behavior under extreme load conditions.
-- **Total Vehicle Events Logged:** 20,230 events
+**2. Worst-Case Stress Test (34 Surveyors, all main-road)**
+A 10-minute tap-generation window was run simulating 34 concurrent surveyors, against the same real deployed backend.
+- **Total Vehicle Events Logged:** 20,230 events (measured)
 - **Unbatched Baseline Requests (Theoretical):** 20,230 requests
-- **Batched HTTP Requests Sent:** 283 requests (Average batch size: 43.81 items)
-- **Estimated Apps Script Execution Time (Unbatched):** ~101.15 minutes (exceeding the daily 90-minute limit)
-- **Estimated Apps Script Execution Time (Batched):** ~1.18 minutes
+- **Batched HTTP Requests Sent:** 498 requests (measured; average batch size 45.24, median at the 50-event cap)
+- **Network Overhead Reduction:** 97.5% (measured)
+- **Actual wall-clock time to fully drain the queue: 1,718 seconds (~28.6 minutes)**, not the 10 minutes of nominal tap generation. 46 of the 498 requests (9.2%) failed with a global-rate-limit rejection and succeeded on retry; final reconciliation is exact (all 20,230 events eventually acknowledged), but only after that extended drain.
+- Average measured request latency under this load was 108 seconds (vs. ~13.5 seconds in the six-surveyor scenario) -- an approximately 8x degradation that compounds directly, since slower responses mean the client flushes less often while the queue keeps growing.
+- **Estimated Apps Script Execution Time (Unbatched):** ~101.15 minutes (estimate; exceeding the daily 90-minute limit)
+- **Estimated Apps Script Execution Time (Batched):** ~2.08 minutes (estimate)
 
-These simulations indicate that the edge-aggregation architecture effectively shifts processing load from the backend to the client, preventing the free-tier server limits from being exhausted during standard surveying sessions.
+These simulations indicate that the edge-aggregation architecture substantially reduces request volume, but the worst-case result also shows the global rate limit activating under sustained heavy load, and that recovery from that state takes materially longer than the nominal survey duration -- both real, measured findings, not merely a documented possibility.
 
 ## 6. Backend Architecture (Google Apps Script)
 The backend acts as an API router and database controller.
@@ -116,6 +120,16 @@ The system requires no pre-provisioned database accounts for administrators. It 
 1. **OTP Verification:** A new administrator inputs their email. The Apps Script generates a 6-digit OTP, caches it via `CacheService` for 15 minutes, and emails it via `MailApp.sendEmail`.
 2. **Dynamic Generation:** Upon OTP verification, the script dynamically generates a brand new Google Spreadsheet, populates it with 6 distinct tabs (one for each survey type) with predefined column headers, and assigns ownership to the admin's email.
 3. **Admin ID Assignment:** The system generates a unique 4-digit PIN (e.g., `ADM-4921`). This PIN is all the field surveyors need. When surveyors enter this PIN into their app, the backend autonomously routes their data to the correct dynamically-generated spreadsheet.
+
+### Security model and threat scope (as of inspection, not as documented elsewhere)
+
+The following is stated from direct reading of `backend/master_apps_script.js`, not from intent or design documentation:
+
+- **Passwords are stored in plaintext.** `handleVerifyOTP` writes the password submitted at signup directly into a registry Sheet cell with no hashing. This is a real weakness, not a documented trade-off. It has not been fixed as part of this pass, because doing so changes the registry's data schema on an already-deployed backend serving live researchers, and that change needs the authors' review, not an unreviewed edit.
+- **The OTP has no per-email attempt limit.** It is 6 digits (1,000,000 possible values), cached for 15 minutes, and a wrong guess can be retried immediately. The only thing slowing a sustained guessing attempt is the deployment's global rate limit (300 requests/minute, shared by every user of the backend) -- at that ceiling, exhausting the full 6-digit space would take on the order of days, so the OTP is not practically brute-forceable within its 15-minute window, but the absence of a dedicated lockout is a gap, not a deliberate control.
+- **The 4-digit Admin ID / routing PIN is brute-forceable in principle.** With no per-attempt lockout on this identifier either, and no caller IP available to Apps Script's Web App handler to rate-limit by source, the entire 9,000-value space (`ADM-1000` to `ADM-9999`) could be swept in roughly 30 minutes at the 300-requests-per-minute global ceiling. A guessed identifier lets a caller submit fabricated data into that administrator's live spreadsheet via `submit_batch` -- a data-integrity risk, not a confidentiality one, since knowing the identifier does not grant read access to the spreadsheet (that requires the Google account invited as an editor at signup).
+
+None of the above has been silently patched; all three are disclosed here as found. The tool's threat model assumes administrator spreadsheets contain only aggregate traffic counts with no personally identifying information, and is not intended for sensitive personal data.
 
 ## 8. The Vault: Failsafe Data Extraction & Transparency
 While the local queue is aggressively flushed every 15 seconds, the app maintains a secondary, hidden queue known as the `traffic_survey_secret_backup`.
