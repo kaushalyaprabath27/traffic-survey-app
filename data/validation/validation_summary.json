@@ -1,0 +1,196 @@
+[
+  {
+    "module": "institutional-idling",
+    "video_confirmed_events": 37,
+    "app_detected": 37,
+    "detection_recall_pct": 100.0,
+    "detection_recall_ci95": [
+      90.6,
+      100
+    ],
+    "classification_accuracy_pct": 97.3,
+    "classification_accuracy_ci95": [
+      86.2,
+      99.5
+    ],
+    "direction_accuracy_pct": 100.0,
+    "direction_accuracy_ci95": [
+      90.6,
+      100
+    ],
+    "end_to_end_correct_pct": 97.3,
+    "end_to_end_correct_ci95": [
+      86.2,
+      99.5
+    ],
+    "missed_detections": 0,
+    "missed_examples": [],
+    "misclassifications": 1,
+    "misclass_examples": [
+      "(datetime.time(17, 15, 20), 'Truck', 'Van')"
+    ],
+    "duplicate_rows_flagged": 2,
+    "timing_error_seconds": {
+      "n": 37,
+      "mean": -0.05,
+      "min": -2,
+      "max": 1
+    }
+  },
+  {
+    "module": "roundabout",
+    "video_confirmed_events": 148,
+    "app_detected": 147,
+    "detection_recall_pct": 99.3,
+    "detection_recall_ci95": [
+      96.3,
+      99.9
+    ],
+    "classification_accuracy_pct": 100.0,
+    "classification_accuracy_ci95": [
+      97.5,
+      100.0
+    ],
+    "direction_accuracy_pct": 99.3,
+    "direction_accuracy_ci95": [
+      96.2,
+      99.9
+    ],
+    "end_to_end_correct_pct": 98.6,
+    "end_to_end_correct_ci95": [
+      95.2,
+      99.6
+    ],
+    "missed_detections": 1,
+    "missed_examples": [
+      "(datetime.time(10, 39, 3), 'Direction 1', 'Tuk Tuk')"
+    ],
+    "misclassifications": 0,
+    "misclass_examples": [],
+    "duplicate_rows_flagged": 2,
+    "timing_error_seconds": {
+      "n": 147,
+      "mean": -0.44,
+      "min": -4,
+      "max": 3
+    }
+  },
+  {
+    "module": "t-junction",
+    "video_confirmed_events": 92,
+    "app_detected": 91,
+    "detection_recall_pct": 98.9,
+    "detection_recall_ci95": [
+      94.1,
+      99.8
+    ],
+    "classification_accuracy_pct": 100.0,
+    "classification_accuracy_ci95": [
+      95.9,
+      100
+    ],
+    "direction_accuracy_pct": 98.9,
+    "direction_accuracy_ci95": [
+      94.0,
+      99.8
+    ],
+    "end_to_end_correct_pct": 97.8,
+    "end_to_end_correct_ci95": [
+      92.4,
+      99.4
+    ],
+    "missed_detections": 1,
+    "missed_examples": [
+      "(datetime.time(16, 52, 17), 'Sub Road to Left', 'Car')"
+    ],
+    "misclassifications": 0,
+    "misclass_examples": [],
+    "duplicate_rows_flagged": 3,
+    "timing_error_seconds": {
+      "n": 91,
+      "mean": 0.21,
+      "min": -6,
+      "max": 6
+    }
+  },
+  {
+    "module": "bus-idling",
+    "video_confirmed_intervals": 11,
+    "app_detected_intervals": 11,
+    "detection_recall_pct": 100.0,
+    "detection_recall_ci95": [
+      74.1,
+      100
+    ],
+    "count_field_accuracy": {
+      "duration": {
+        "exact_match_pct": 100.0,
+        "exact_match_ci95": [
+          74.1,
+          100
+        ],
+        "mean_diff_app_minus_video": 0.0
+      },
+      "off": {
+        "exact_match_pct": 100.0,
+        "exact_match_ci95": [
+          74.1,
+          100
+        ],
+        "mean_diff_app_minus_video": 0.0
+      },
+      "on": {
+        "exact_match_pct": 90.9,
+        "exact_match_ci95": [
+          62.3,
+          98.4
+        ],
+        "mean_diff_app_minus_video": 0.09
+      }
+    },
+    "mismatched_examples": [
+      "11:14:45: on: app=6 video=5"
+    ],
+    "start_timing_error_seconds": {
+      "n": 11,
+      "mean": 0.09,
+      "min": -2,
+      "max": 2
+    }
+  },
+  {
+    "module": "pedestrian",
+    "video_confirmed_intervals": 23,
+    "app_detected_intervals": 23,
+    "detection_recall_pct": 100.0,
+    "detection_recall_ci95": [
+      85.7,
+      100
+    ],
+    "count_field_accuracy": {
+      "countIn": {
+        "exact_match_pct": 100.0,
+        "exact_match_ci95": [
+          85.7,
+          100
+        ],
+        "mean_diff_app_minus_video": 0.0
+      },
+      "countOut": {
+        "exact_match_pct": 100.0,
+        "exact_match_ci95": [
+          85.7,
+          100
+        ],
+        "mean_diff_app_minus_video": 0.0
+      }
+    },
+    "mismatched_examples": [],
+    "start_timing_error_seconds": {
+      "n": 23,
+      "mean": 0.13,
+      "min": -3,
+      "max": 3
+    }
+  }
+]
