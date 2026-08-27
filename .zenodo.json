@@ -1,0 +1,28 @@
+{
+  "title": "Traffic Survey Application Suite",
+  "description": "A modular, offline-first progressive web application suite for multi-module traffic field data collection, built around a shared data-capture engine that queues events locally and synchronizes them to a Google Apps Script backend in batches, keeping a multi-hour field session within a free-tier execution quota that per-event requests alone would exceed.",
+  "creators": [
+    {
+      "name": "Warnasuriya, W.P.K.",
+      "affiliation": "Department of Civil and Environmental Engineering, Faculty of Engineering, University of Ruhuna, Sri Lanka"
+    },
+    {
+      "name": "Rengarasu, T.M.",
+      "affiliation": "Department of Civil and Environmental Engineering, Faculty of Engineering, University of Ruhuna, Sri Lanka"
+    },
+    {
+      "name": "Ahamed, R. Saahith",
+      "affiliation": "Department of Civil and Environmental Engineering, Faculty of Engineering, University of Ruhuna, Sri Lanka"
+    }
+  ],
+  "license": "MIT",
+  "upload_type": "software",
+  "access_right": "open",
+  "keywords": [
+    "progressive web application",
+    "offline-first design",
+    "field data collection",
+    "traffic survey",
+    "video-based validation"
+  ]
+}

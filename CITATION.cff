@@ -1,0 +1,26 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "Traffic Survey Application Suite"
+abstract: >-
+  A modular, offline-first progressive web application suite for
+  multi-module traffic field data collection, built around a shared
+  data-capture engine that queues events locally and synchronizes them
+  to a Google Apps Script backend in batches, keeping a multi-hour field
+  session within a free-tier execution quota that per-event requests
+  alone would exceed.
+authors:
+  - family-names: Warnasuriya
+    given-names: "W.P.K."
+    affiliation: "Department of Civil and Environmental Engineering, Faculty of Engineering, University of Ruhuna, Sri Lanka"
+  - family-names: Rengarasu
+    given-names: "T.M."
+    affiliation: "Department of Civil and Environmental Engineering, Faculty of Engineering, University of Ruhuna, Sri Lanka"
+    email: rengarasu@cee.ruh.ac.lk
+  - family-names: Ahamed
+    given-names: "R. Saahith"
+    affiliation: "Department of Civil and Environmental Engineering, Faculty of Engineering, University of Ruhuna, Sri Lanka"
+license: MIT
+repository-code: "https://github.com/kaushalyaprabath27/traffic-survey-app"
+version: 1.0.0
+date-released: "2026-07-25"
+# doi: <<MEASURE: Zenodo DOI, once the v1.0.0 release is archived -- see docs/ZENODO_RELEASE.md>>
