@@ -1,6 +1,23 @@
 const urlParams = new URLSearchParams(window.location.search);
 // Constants
 const APPS_SCRIPT_URL = window.ENV_APPS_SCRIPT_URL || 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE';
+// Client-generated event identifier for idempotent sync: lets the backend
+// recognize and skip a retried event that already landed, instead of
+// writing a duplicate row if an earlier ACK was lost after the write
+// committed. crypto.randomUUID() needs a secure context (HTTPS/localhost);
+// falls back to a Math.random()-based UUID v4 shape otherwise (weaker
+// uniqueness guarantee, but this is a dedup key, not a security token).
+function generateEventId() {
+    if (window.crypto && typeof window.crypto.randomUUID === 'function') {
+        return window.crypto.randomUUID();
+    }
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        const r = Math.random() * 16 | 0;
+        const v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
+}
+
 
 setTimeout(() => {
     const urlToCheck = (typeof APPS_SCRIPT_URL !== 'undefined') ? APPS_SCRIPT_URL : ((typeof MASTER_APPS_SCRIPT_URL !== 'undefined') ? MASTER_APPS_SCRIPT_URL : '');
@@ -186,6 +203,7 @@ vehicleButtons.forEach(btn => {
 
         const dataRecord = {
             action: 'submit',
+            eventId: generateEventId(),
             surveyType: 'institutional-idling',
             adminId: appState.adminId,
             name: appState.surveyorName,

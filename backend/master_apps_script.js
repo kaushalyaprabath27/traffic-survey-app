@@ -34,11 +34,71 @@ function setupRegistry() {
   let sheet = ss.getSheetByName(REGISTRY_SHEET_NAME);
   if (!sheet) {
     sheet = ss.insertSheet(REGISTRY_SHEET_NAME);
-    sheet.appendRow(["Timestamp", "Name", "Email", "Institute", "Country", "Password", "AdminID", "TargetSheetID", "TargetSheetURL", "Config"]);
+    sheet.appendRow(["Timestamp", "Name", "Email", "Institute", "Country", "Password", "AdminID", "TargetSheetID", "TargetSheetURL", "Config", "PasswordSalt"]);
     sheet.getRange("1:1").setFontWeight("bold");
     sheet.setFrozenRows(1);
   }
   return ss;
+}
+
+// --- Password hashing -------------------------------------------------
+// Apps Script has no bcrypt/argon2/scrypt available. This uses salted
+// SHA-256 (Utilities.computeDigest), which is NOT a memory-hard KDF: it is
+// fast to compute, so an attacker who obtains the registry sheet directly
+// (not through this API) could brute-force weak passwords far faster than
+// against bcrypt/argon2. It is disclosed as this and only this -- a real
+// improvement over plaintext storage, not a claim of best-practice-grade
+// password hashing. A migration to a proper KDF would require a library
+// Apps Script does not natively provide.
+function generateSalt() {
+  return Utilities.getUuid();
+}
+
+function hashPassword(password, salt) {
+  const digest = Utilities.computeDigest(
+    Utilities.DigestAlgorithm.SHA_256,
+    password + salt,
+    Utilities.Charset.UTF_8
+  );
+  return digest.map(function (b) {
+    const v = (b < 0 ? b + 256 : b).toString(16);
+    return v.length === 1 ? "0" + v : v;
+  }).join("");
+}
+
+// One-time migration: hashes every existing plaintext password in the
+// registry in place and clears the plaintext value from the Password
+// column (the column is overwritten with the hash, so no plaintext
+// remains anywhere in the sheet after this runs). Run manually once from
+// the Apps Script editor (select this function, click Run) after
+// deploying the code above -- it is not called automatically by any
+// request handler, so it will not silently re-run.
+//
+// Detection: a row with no value in the PasswordSalt column (column K) is
+// treated as pre-migration/plaintext. Already-migrated rows are skipped.
+function migrateHashPasswords() {
+  const ss = getRegistrySpreadsheet();
+  const sheet = ss.getSheetByName(REGISTRY_SHEET_NAME);
+  if (!sheet) {
+    Logger.log("No registry sheet found -- nothing to migrate.");
+    return;
+  }
+  const dataRange = sheet.getDataRange().getValues();
+  let migrated = 0;
+  for (let i = 1; i < dataRange.length; i++) {
+    const row = dataRange[i];
+    const currentPasswordCell = row[5];
+    const currentSalt = row[10];
+    if (!currentPasswordCell) continue; // empty row / no password set
+    if (currentSalt) continue;          // already migrated
+    const salt = generateSalt();
+    const hash = hashPassword(currentPasswordCell.toString(), salt);
+    sheet.getRange(i + 1, 6).setValue(hash);   // column F: Password (plaintext overwritten)
+    sheet.getRange(i + 1, 11).setValue(salt);  // column K: PasswordSalt
+    migrated++;
+  }
+  Logger.log("Migrated " + migrated + " row(s) from plaintext to salted SHA-256.");
+  return migrated;
 }
 
 function doPost(e) { return handleRequest(e); }
@@ -164,12 +224,12 @@ function handleVerifyOTP(data) {
   const newSs = SpreadsheetApp.create("Traffic Survey Data - " + cachedData.name + " (" + adminId + ")");
   
   const sheets = [
-    {name: "main-road",           headers: ["name", "location", "locationNumber", "date", "time", "direction", "vehicleType"]},
-    {name: "roundabout",          headers: ["name", "location", "locationNumber", "date", "time", "direction", "vehicleType"]},
-    {name: "t-junction",          headers: ["name", "location", "locationNumber", "date", "time", "direction", "vehicleType"]},
-    {name: "pedestrian",          headers: ["Name", "Location", "Location Number", "Date", "Start Time", "Finish Time", "Count IN", "Count OUT"]},
-    {name: "bus-idling",          headers: ["Name", "Location", "GPS Coordinates", "Date", "Bus Route", "Start Time", "Stop Time", "Idling Duration", "Got Off", "Got On"]},
-    {name: "institutional-idling", headers: ["Name", "Location", "Location Number", "Date", "Time", "Direction", "Action", "Vehicle Type"]}
+    {name: "main-road",           headers: ["name", "location", "locationNumber", "date", "time", "direction", "vehicleType", "EventID"]},
+    {name: "roundabout",          headers: ["name", "location", "locationNumber", "date", "time", "direction", "vehicleType", "EventID"]},
+    {name: "t-junction",          headers: ["name", "location", "locationNumber", "date", "time", "direction", "vehicleType", "EventID"]},
+    {name: "pedestrian",          headers: ["Name", "Location", "Location Number", "Date", "Start Time", "Finish Time", "Count IN", "Count OUT", "EventID"]},
+    {name: "bus-idling",          headers: ["Name", "Location", "GPS Coordinates", "Date", "Bus Route", "Start Time", "Stop Time", "Idling Duration", "Got Off", "Got On", "EventID"]},
+    {name: "institutional-idling", headers: ["Name", "Location", "Location Number", "Date", "Time", "Direction", "Action", "Vehicle Type", "EventID"]}
   ];
   
   let firstSheet = newSs.getSheets()[0];
@@ -189,16 +249,20 @@ function handleVerifyOTP(data) {
   
   const ss = setupRegistry();
   const registrySheet = ss.getSheetByName(REGISTRY_SHEET_NAME);
+  const passwordSalt = generateSalt();
+  const passwordHash = hashPassword(cachedData.password, passwordSalt);
   registrySheet.appendRow([
-    new Date(), 
-    cachedData.name, 
-    email, 
-    cachedData.institute, 
-    cachedData.country, 
-    cachedData.password, 
-    adminId, 
-    newSs.getId(), 
-    newSs.getUrl()
+    new Date(),
+    cachedData.name,
+    email,
+    cachedData.institute,
+    cachedData.country,
+    passwordHash,
+    adminId,
+    newSs.getId(),
+    newSs.getUrl(),
+    "",
+    passwordSalt
   ]);
   
   const subject = "Welcome to Traffic Survey App!";
@@ -228,7 +292,12 @@ function handleLogin(data) {
   const dataRange = registrySheet.getDataRange().getValues();
   for (let i = dataRange.length - 1; i >= 1; i--) {
     if (dataRange[i][2] && dataRange[i][2].toString().toLowerCase() === email) {
-      if (dataRange[i][5] === password) {
+      const storedValue = dataRange[i][5];
+      const storedSalt = dataRange[i][10];
+      const matches = storedSalt
+        ? hashPassword(password, storedSalt) === storedValue
+        : storedValue === password; // pre-migration row; see migrateHashPasswords()
+      if (matches) {
         return responseJson({
           status: "success",
           adminId: dataRange[i][6],
@@ -287,11 +356,29 @@ function handleSubmitBatch(data) {
   if (!targetSheet) targetSheet = targetSs.insertSheet(surveyType);
   
   let rows = [];
-  
+  let duplicatesSkipped = 0;
+  const cache = CacheService.getScriptCache();
+
   for (let i = 0; i < payload.length; i++) {
     let item = payload[i];
     let sType = item.surveyType;
     if (sType === "school-idling") sType = "institutional-idling";
+
+    // Idempotency: skip an event whose eventId was already written in the
+    // recent window, so a retry after a lost ACK (the write committed but
+    // the client never saw the success response, so it retries the same
+    // batch) does not produce a duplicate row. 6 hours is CacheService's
+    // maximum TTL; events without an eventId (older client builds that
+    // predate this field) are not deduplicated -- they fall through
+    // unchanged, exactly as before this change.
+    if (item.eventId) {
+      const cacheKey = "evt_" + item.eventId;
+      if (cache.get(cacheKey)) {
+        duplicatesSkipped++;
+        continue;
+      }
+      cache.put(cacheKey, "1", 21600);
+    }
 
     let rowData = [];
     if (sType === "main-road" || sType === "roundabout" || sType === "t-junction") {
@@ -302,7 +389,8 @@ function handleSubmitBatch(data) {
         item.date          || "",
         item.time          || "",
         item.direction     || "",
-        item.vehicleType   || ""
+        item.vehicleType   || "",
+        item.eventId       || ""
       ];
     }
     else if (sType === "pedestrian") {
@@ -314,7 +402,8 @@ function handleSubmitBatch(data) {
         item.startTime     || "",
         item.finishTime    || "",
         item.countIn       || "0",
-        item.countOut      || "0"
+        item.countOut      || "0",
+        item.eventId       || ""
       ];
     }
     else if (sType === "bus-idling") {
@@ -328,7 +417,8 @@ function handleSubmitBatch(data) {
         item.stopTime      || "",
         item.durationSeconds || "0",
         item.offCount      || "0",
-        item.onCount       || "0"
+        item.onCount       || "0",
+        item.eventId       || ""
       ];
     }
     else if (sType === "institutional-idling") {
@@ -340,7 +430,8 @@ function handleSubmitBatch(data) {
         item.time          || "",
         item.direction     || "",
         item.actionStatus  || item.action || "",
-        item.vehicleType   || ""
+        item.vehicleType   || "",
+        item.eventId       || ""
       ];
     }
     else {
@@ -348,13 +439,13 @@ function handleSubmitBatch(data) {
     }
     rows.push(rowData);
   }
-  
+
   if (rows.length > 0) {
     // Bulk insert for 98% reduction in server runtime
     targetSheet.getRange(targetSheet.getLastRow() + 1, 1, rows.length, rows[0].length).setValues(rows);
   }
-  
-  return responseJson({status: "success", count: rows.length});
+
+  return responseJson({status: "success", count: rows.length, duplicatesSkipped: duplicatesSkipped});
 }
 
 function handleSubmit(data) {
@@ -423,9 +514,12 @@ function handleResetPassword(data) {
   }
   
   if (rowIndex === -1) return responseJson({status: "error", message: "Account not found."});
-  
-  registrySheet.getRange(rowIndex, 6).setValue(newPassword);
-  
+
+  const newSalt = generateSalt();
+  const newHash = hashPassword(newPassword, newSalt);
+  registrySheet.getRange(rowIndex, 6).setValue(newHash);   // column F: Password
+  registrySheet.getRange(rowIndex, 11).setValue(newSalt);  // column K: PasswordSalt
+
   cache.remove("reset_" + email);
   return responseJson({status: "success", message: "Password updated successfully!"});
 }

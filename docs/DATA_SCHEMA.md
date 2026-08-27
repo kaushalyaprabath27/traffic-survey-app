@@ -2,7 +2,7 @@
 
 The JSON event object submitted by the client for each module, and the corresponding Google Sheet column layout it is written to (`backend/master_apps_script.js`, `handleSubmitBatch`). All fields are strings unless noted; times are `HH:MM:SS` in the surveyor's local device time (see the timing-resolution caveat in the manuscript's Limitations — there is no server-side clock reconciliation).
 
-Every event also carries `action: "submit"` and `adminId` (the four-digit `ADM-XXXX` routing identifier); these route the request but are not written as data columns.
+Every event also carries `action: "submit"` and `adminId` (the four-digit `ADM-XXXX` routing identifier); these route the request but are not written as data columns. Every event also carries `eventId` (client-generated UUID v4), used for server-side dedup (see "Idempotency" below) and written as the last column in every module's sheet.
 
 ## main-road, roundabout, t-junction
 
@@ -17,6 +17,7 @@ Identical schema across all three modules.
 | `time` | string (`HH:MM:SS`) | E | Device local time |
 | `direction` | string | F | e.g. "In"/"Out", or module-configured direction labels |
 | `vehicleType` | string | G | One of: Bike, Tuk Tuk, Car, Bus, Van, Truck |
+| `eventId` | string (UUID v4) | H | Client-generated; see "Idempotency" below |
 
 ## pedestrian
 
@@ -30,6 +31,7 @@ Identical schema across all three modules.
 | `finishTime` | string | F | Interval end |
 | `countIn` | integer (as string; defaults `"0"`) | G | |
 | `countOut` | integer (as string; defaults `"0"`) | H | |
+| `eventId` | string (UUID v4) | I | |
 
 ## bus-idling
 
@@ -45,6 +47,7 @@ Identical schema across all three modules.
 | `durationSeconds` | integer (as string; defaults `"0"`) | H | |
 | `offCount` | integer (as string; defaults `"0"`) | I | Passengers alighting |
 | `onCount` | integer (as string; defaults `"0"`) | J | Passengers boarding |
+| `eventId` | string (UUID v4) | K | |
 
 ## institutional-idling
 
@@ -60,6 +63,11 @@ Also accepts the legacy `surveyType` value `"school-idling"`, normalized server-
 | `direction` | string | F | |
 | `actionStatus` (falls back to `action` if absent) | string | G | e.g. "Stop", "Go" |
 | `vehicleType` | string | H | |
+| `eventId` | string (UUID v4) | I | |
+
+## Idempotency
+
+`handleSubmitBatch` checks each event's `eventId` against a 6-hour `CacheService` window before writing; a repeated `eventId` (a retried batch after a lost ACK) is skipped and counted in the response's `duplicatesSkipped` field rather than written again. See `docs/idempotency_and_password_hashing.md` for the empirical test confirming this and its deployment status.
 
 ## Unrecognized `surveyType`
 
