@@ -14,6 +14,18 @@ This extends the manuscript's existing single-module validation (Main Road, 231 
 
 All confidence intervals are Wilson 95%.
 
+### Session time windows
+
+| Module | Date | Time window |
+|---|---|---|
+| t-junction | 27 July 2026 | 16:51:09--16:58:07 |
+| institutional-idling | 27 July 2026 | 17:10:49--17:26:46 |
+| roundabout | 28 July 2026 | 10:38:48--10:48:47 |
+| bus-idling | 28 July 2026 | 11:07:48--11:37:53 |
+| pedestrian | 28 July 2026 | 11:39:29--11:52:39 |
+
+Precise site addresses and the number of surveyors involved in each of these five sessions were not recorded to the same level of detail as the 14 July main-road session; this is named as a limitation in the manuscript rather than reconstructed.
+
 **Missed detections (1 each, roundabout and t-junction):** a Tuk Tuk at 10:39:03 (roundabout) and a Car at 16:52:17 (t-junction) were visible in the video but never logged by the app.
 
 **Misclassification (1, institutional-idling):** a vehicle at 17:15:20 was logged by the app as "Van" but the video shows "Truck."
