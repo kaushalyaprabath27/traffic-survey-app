@@ -56,4 +56,4 @@ The new `EventID` header is only added to *newly created* administrator spreadsh
 
 1. Deploy the updated `backend/master_apps_script.js` (Deploy > Manage deployments > New version).
 2. From the Apps Script editor, select `migrateHashPasswords` in the function dropdown and click Run once. Check the execution log for the migrated-row count.
-3. `<<AUTHOR DECISION: existing administrators' passwords were stored in plaintext in a shared sheet before this migration. Decide whether to notify affected researchers and/or force a password reset. This is a disclosure decision, not a code decision.>>`
+3. Notify administrators who registered before this migration that their password was stored in plaintext for the period before the fix, and offer them a password reset (consistent with the manuscript's Security model subsection).
