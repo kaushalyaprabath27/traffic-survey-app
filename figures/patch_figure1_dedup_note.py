@@ -14,7 +14,7 @@ This script whites out that callout box and redraws it with the corrected
 wording, in place, leaving the rest of the diagram untouched. It is not
 meant to be re-run against a fresh copy of the source diagram without
 re-checking the box coordinates by eye first, the same caveat that
-applies to tools/redact/blur_figure2.py.
+applies to tools/redact/blur_figure3_occupant.py.
 
 Usage:
     python patch_figure1_dedup_note.py <input_image> <output_image>

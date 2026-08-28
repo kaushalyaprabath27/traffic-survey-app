@@ -1,7 +1,10 @@
 """
-blur_figure2.py -- redacts the vehicle occupant (and registration plate, if
-visible) in the manuscript's Figure 2 field-validation still, per the ethics
-statement's claim that no identifiable person appears in the published image.
+blur_figure3_occupant.py -- redacts the vehicle occupant (and registration
+plate, if visible) in the manuscript's Figure 3 field-validation still, per
+the ethics statement's claim that no identifiable person appears in the
+published image. (Renamed from blur_figure2.py, which referred to an
+earlier figure slot before the manuscript's figures were renumbered; the
+old name persisted after Figure 3 took over this content.)
 
 The source frame shows a tuk-tuk in profile at a public roadway; the driver
 is visible in silhouette/side-profile. No registration plate is legible in
@@ -10,7 +13,7 @@ were checked and none is readable at this angle), but the region is blurred
 anyway as a precaution in case a higher-resolution source reveals one.
 
 Usage:
-    python blur_figure2.py <input_image> <output_image>
+    python blur_figure3_occupant.py <input_image> <output_image>
 
 The occupant bounding box below was set by visual inspection of this
 specific frame (1917x1078 source) and is NOT a general-purpose face/plate
@@ -23,7 +26,7 @@ import cv2
 
 def main():
     if len(sys.argv) != 3:
-        print("Usage: python blur_figure2.py <input_image> <output_image>")
+        print("Usage: python blur_figure3_occupant.py <input_image> <output_image>")
         sys.exit(1)
 
     src_path, dst_path = sys.argv[1], sys.argv[2]

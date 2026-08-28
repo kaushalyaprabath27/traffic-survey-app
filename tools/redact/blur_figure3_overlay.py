@@ -1,6 +1,6 @@
 """
 blur_figure3_overlay.py -- second redaction pass on the manuscript's Figure 3
-field-validation still (already occupant-blurred by blur_figure2.py).
+field-validation still (already occupant-blurred by blur_figure3_occupant.py).
 
 Reviewer/supervisor feedback: the frame has a burned-in camera overlay
 stamping the exact date, time, and full road name onto a photo that also
