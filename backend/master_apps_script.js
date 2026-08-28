@@ -158,6 +158,8 @@ function handleRequest(e) {
       return handleGetConfig(data);
     } else if (action === "reset_password") {
       return handleResetPassword(data);
+    } else if (action === "registry_info") {
+      return handleRegistryInfo(data);
     } else {
       return responseJson({status: "error", message: "Invalid action"});
     }
@@ -554,12 +556,41 @@ function handleGetConfig(data) {
   
   for (let i = dataRange.length - 1; i >= 1; i--) {
     if (dataRange[i][6] === adminId) {
-      return responseJson({status: "success", config: dataRange[i][9] || '{}', adminName: dataRange[i][1]});
+      return responseJson({status: "success", config: dataRange[i][9] || '{}', adminName: dataRange[i][1], adminEmail: dataRange[i][2] || ''});
     }
   }
   return responseJson({status: "error", message: "Admin ID not found"});
 }
 
+
+// Read-only diagnostic: confirms which spreadsheet this deployment's
+// REGISTRY_SHEET_ID script property actually resolves to, and how many
+// admin rows it can see there - no emails/passwords included. Use this to
+// check whether the live deployment is reading the registry sheet you
+// expect (e.g. after pasting this file into a new Apps Script project,
+// which starts with no REGISTRY_SHEET_ID and silently creates a fresh,
+// empty registry spreadsheet).
+function handleRegistryInfo(data) {
+  const props = PropertiesService.getScriptProperties();
+  const storedId = props.getProperty("REGISTRY_SHEET_ID");
+
+  const ss = getRegistrySpreadsheet();
+  const sheet = ss.getSheetByName(REGISTRY_SHEET_NAME);
+  const rowCount = sheet ? Math.max(0, sheet.getLastRow() - 1) : 0;
+  const adminIds = sheet && rowCount > 0
+    ? sheet.getRange(2, 7, rowCount, 1).getValues().map(r => r[0]).filter(String)
+    : [];
+
+  return responseJson({
+    status: "success",
+    scriptPropertyWasSet: !!storedId,
+    resolvedSpreadsheetId: ss.getId(),
+    resolvedSpreadsheetUrl: ss.getUrl(),
+    registrySheetExists: !!sheet,
+    adminRowCount: rowCount,
+    adminIds: adminIds
+  });
+}
 
 function responseJson(obj) {
   return ContentService.createTextOutput(JSON.stringify(obj))
