@@ -27,7 +27,11 @@ force_survey_js = """
 
 with sync_playwright() as p:
     browser = p.chromium.launch()
-    page = browser.new_page(viewport={"width": 430, "height": 932})
+    # device_scale_factor=3: renders at 3x pixel density (like a Retina
+    # display), giving real additional pixel detail for the 500 dpi
+    # combination-figure requirement -- not just upsampling a lower-res
+    # capture after the fact.
+    page = browser.new_page(viewport={"width": 430, "height": 932}, device_scale_factor=3)
     for m in modules:
         errors = []
         page.on("pageerror", lambda exc: errors.append(str(exc)))

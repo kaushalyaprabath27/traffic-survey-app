@@ -16,12 +16,16 @@ modules = [
 
 # Landscape layout: all six phone-shaped screenshots in a single row, so the
 # overall composite is wide rather than the earlier near-square 3x2 grid.
-CELL_W, CELL_H = 380, 620
-LABEL_H = 50
-PAD = 14
+# Cell size is 3x the original (380x620 -> 1140x1860) to match the
+# screenshots' own 3x device_scale_factor capture (take_screenshots.py),
+# giving real pixel detail rather than upsampled interpolation, so the
+# composite can be tagged at 500 dpi honestly.
+CELL_W, CELL_H = 1140, 1860
+LABEL_H = 150
+PAD = 42
 
 try:
-    font = ImageFont.truetype("arialbd.ttf", 26)
+    font = ImageFont.truetype("arialbd.ttf", 78)
 except Exception:
     font = ImageFont.load_default()
 
@@ -52,11 +56,11 @@ for i, (img, label) in enumerate(cells):
     x = PAD + col * (CELL_W + PAD)
     y = PAD + row * (CELL_H + LABEL_H + PAD)
     composite.paste(img, (x, y))
-    draw.rectangle([x, y, x + CELL_W - 1, y + CELL_H - 1], outline=(0, 0, 0), width=2)
+    draw.rectangle([x, y, x + CELL_W - 1, y + CELL_H - 1], outline=(0, 0, 0), width=6)
     text_y = y + CELL_H + 8
     bbox = draw.textbbox((0, 0), label, font=font)
     text_w = bbox[2] - bbox[0]
     draw.text((x + (CELL_W - text_w) / 2, text_y), label, fill=(0, 0, 0), font=font)
 
-composite.save(OUT_PATH, dpi=(300, 300))
+composite.save(OUT_PATH, dpi=(500, 500))
 print("saved", OUT_PATH, composite.size)
