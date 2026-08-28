@@ -26,7 +26,7 @@ The frontend is built using pure HTML5, CSS3, and Vanilla JavaScript with no hea
 
 ### 2. Deploying the Backend (Google Apps Script)
 The backend acts as an API router and database controller utilizing Google Sheets as the relational database.
-1. Obtain the `master_apps_script.js` code (provided alongside this repository or detailed in the technical documentation).
+1. Obtain the backend code from [`backend/master_apps_script.js`](backend/master_apps_script.js) in this repository.
 2. Create a new Google Apps Script project at [script.google.com](https://script.google.com).
 3. Paste the backend code into the editor.
 4. Deploy the script as a **Web App**, granting access to "Anyone".
@@ -38,6 +38,17 @@ Once your Google Apps Script Web App is deployed, you must link the frontend to 
 2. Replace the `MASTER_APPS_SCRIPT_URL` constant with your deployed Web App URL.
 3. Repeat this process for the `app.js` file inside every individual module directory (`main-road/app.js`, `roundabout/app.js`, etc.).
 4. Deploy your frontend changes.
+
+## Documentation
+
+- [TECHNICAL_DOCUMENTATION.md](TECHNICAL_DOCUMENTATION.md) --- full architecture, development, and security-findings detail
+- [docs/DATA_SCHEMA.md](docs/DATA_SCHEMA.md) --- event JSON schema and Sheet column layout for every module
+- [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) --- step-by-step deployment procedure
+- [docs/loadtest_results.md](docs/loadtest_results.md) --- batching/quota load-test method, raw per-request logs, and results
+- [docs/idempotency_and_password_hashing.md](docs/idempotency_and_password_hashing.md) --- password-hashing migration and event-deduplication fix, with deployment steps
+- [docs/STORAGE_CEILING_ANALYSIS.md](docs/STORAGE_CEILING_ANALYSIS.md) --- local-storage quota derivation and failure-pathway analysis
+- [docs/validation_multimodule_results.md](docs/validation_multimodule_results.md) --- video-based validation method and results across all six modules
+- [CHANGELOG.md](CHANGELOG.md) --- release history
 
 ## Data Privacy & Offline Recovery
 All surveyor data is aggregated into local device memory before being asynchronously flushed to the cloud in batches of 50. Even in the event of total network failure or backend unavailability, data is persistently retained on the device in a fallback queue (`traffic_survey_secret_backup`). Surveyors can explicitly download a raw JSON backup of their entire dataset via the "Export Local Backup" controls found throughout the app UI.
