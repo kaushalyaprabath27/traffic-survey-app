@@ -1,6 +1,9 @@
 # A1 / A5: Password hashing and idempotency — implementation status
 
-**Status: implemented in this repository, not yet deployed to the live backend.** Deploying `backend/master_apps_script.js` to the live Apps Script project (and running the one-time password migration) requires the project owner's Google account access, which this session does not have. Everything below is ready to deploy; the deployment step itself is the author's action.
+**Status: deployed to the live backend on 28 August 2026.** `backend/master_apps_script.js` was pushed to the live Apps Script project and redeployed as a new Web App version. Both fixes below have been empirically confirmed against production, not just asserted from the code:
+
+- **Password hashing:** `migrateHashPasswords` was run from the Apps Script editor. Execution log: `Migrated 12 row(s) from plaintext to salted SHA-256.`
+- **Idempotency:** `tools/loadtest/test_idempotency.js` was re-run against the live endpoint after deployment. Result: first submission `{"status":"success","count":1,"duplicatesSkipped":0}`, retry with the same `eventId` `{"status":"success","count":0,"duplicatesSkipped":1}` — the retry was correctly rejected server-side, confirming no duplicate row was written.
 
 ## A5: Idempotency
 
