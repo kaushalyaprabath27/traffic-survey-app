@@ -590,3 +590,85 @@ here, not inferred.
   than distributing and tracking a separate ID per surveyor. Not
   implemented; `docs/DATA_MINIMIZATION_PROPOSAL.md` updated to record
   the decision.
+
+## Round 3 (29 Aug 2026)
+
+### Blocker 1 — ADM-5505 in Figure 2: premise did not hold, checked anyway
+
+Read-only `registry_info` check (fresh, not relying on Part 0's earlier
+read): `ADM-5505` is **not** in the live registry (12 admins present,
+`ADM-7734` -- its Part 0 replacement -- is; `ADM-5505` is not). Figure 2
+(`media/media/image2.png`) is confirmed byte-identical to the Part 0
+placeholder build (`ADM-0000`, verified by hash, not regenerated) --
+the file already shown to the reviewer describing this blocker is not
+the file currently in the manuscript. No redaction needed; none applied,
+since there is nothing live to redact. Figure 3 unchanged since Part 0's
+check. Reported both facts (dead ID, already-fixed figure) rather than
+silently no-op'ing or silently redoing already-complete work.
+
+### Blocker 2 — revision-process narration removed
+
+2a, 2b, 2c applied verbatim as supplied (Admin ID paragraph, Data
+integrity safeguards paragraph, storage-ceiling sentence). 2d sweep
+(`this revision`, `earlier draft`, `previously disclosed`, `overclaim`,
+`corrected here`, `as stated`, mid-paragraph `\textbf{`): clean after
+2a/2b's edits -- the only hits were inside the two paragraphs just
+replaced. Two legitimate, unflagged occurrences of "as stated in Method
+validation, above" remain (table captions, plain cross-references, not
+narration). `docs/RESULT_PROVENANCE.md`'s pointer sentence in Resource
+availability also checked by hand (not a sweep-term match) and judged
+legitimate -- states which results predate two specific code fixes,
+which is deployment provenance, not commentary on manuscript drafts.
+
+### Blocker 3 — Table 2 / Limitations updated to match the body
+
+Table 2's "Data recovery after backend unreachability" row:
+Implementation cell now states the actual 3-of-6-modules,
+no-active-header coverage; Verification cell notes the coverage claim
+itself was confirmed by direct inspection of all six interfaces, not
+merely asserted. Limitations' closing sentence about the manual export
+corrected. **Found a second, uncorrected instance of the same overclaim
+while checking this**, in Data integrity safeguards itself (right after
+the paragraph 2b replaced: "...or use the manual export above") -- not
+named in the task's list, fixed anyway since it was the same problem in
+a second location, confirmed by visual page-render check, not caught by
+grep alone (the sentence doesn't contain any of blocker 2d's sweep
+terms).
+
+### Blocker 4 — highlight bullet grammar
+
+Applied verbatim as supplied.
+
+### Final pass, numeric re-verification
+
+Recomputed independently (not read off the manuscript): 9,000 (old
+Admin ID space) and 30 min enumeration; 32^12 = 1.153x10^18, matches
+the manuscript's 1.15x10^18; 900,000 OTP space and 0.5% coverage;
+3,570/600 = 5.95. All match exactly, no disagreement. Table 5 sums
+(231 = 157+33+24+8+6+3; 227/231=98.3%; 224/227=98.7%; 224/231=97.0%),
+Table 4 (3,570/179=19.94; 20,230/498=40.62; 95.0%/97.5% reduction),
+458 events/hour, 7.86x ratio, 508+34=542, and the 113s/225s/9s
+discrepancy gaps all re-verified against source, exact match. Tables
+8/9 unchanged since Round 2's Part D recomputation (no code touching
+those figures this round). Recompiled twice, clean, 21 pages
+(unchanged) -- no table spans a page break behind an oversized cell,
+no figure orphaned from its caption. No Admin ID/PIN/URL/email/name in
+any figure (unchanged since Part 0; no figure regenerated this round).
+
+### Carry-forwards -- status, not re-litigated
+
+- **B5 data minimization**: this round's prompt asks to "propose the
+  surveyor-identifier schema change and show it before applying." **Not
+  redone** -- the author explicitly declined this exact proposal earlier
+  in this same session (stated reasoning: free-text names are easier
+  for an administrator to manage than distributing per-surveyor IDs;
+  `docs/DATA_MINIMIZATION_PROPOSAL.md` already records the decision).
+  Flagged to the author rather than silently re-opening a decision
+  already made, or silently ignoring the round-3 prompt.
+- **Table 3 merge/cut, Figure 3 schematic, cover-letter sentence**:
+  unchanged, still open, still in `MethodsX_latex/SUBMISSION_NOTES.md`
+  §8-9 and `REVISION_DECISIONS_NEEDED.md`.
+- **Part C (C1/C2)**: no new work requested beyond what
+  `REVISION_DECISIONS_NEEDED.md` already contains -- C1 already marked
+  resolved (author confirmed `MainRoad.xlsx` unrelated), C2's evidence
+  already reported. Nothing to add.
