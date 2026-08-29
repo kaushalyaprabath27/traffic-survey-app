@@ -1,4 +1,12 @@
-# Data minimization proposal (B5) — NOT implemented, awaiting approval
+# Data minimization proposal (B5) — declined by the author, not implemented
+
+**Decision (29 Aug 2026): keep the free-text surveyor name field as-is.**
+Author's stated reasoning: free-text names make it easy for an
+administrator to recognize which surveyor is which; assigning and
+distributing a separate identifier to each surveyor one by one is
+operationally harder than the privacy gain is worth. Not implemented,
+and not planned for this revision. Kept below for the record, in case
+this is revisited later.
 
 Proposes replacing the free-text surveyor `name` field, written into every
 recorded event row, with a surveyor identifier decoupled from the

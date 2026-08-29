@@ -7,7 +7,10 @@ text, nothing marked resolved. Report only.
 
 ## C1 — Main-road reproducibility: independent search, found something
 
-**Read this section first — it changes the starting premise.**
+**Resolved — author confirmed (29 Aug 2026): `MainRoad.xlsx` is a
+different, unrelated session.** No manuscript change needed; the
+existing "not retained" Limitations text stands. Findings kept below
+for the record.
 
 ### What was searched
 

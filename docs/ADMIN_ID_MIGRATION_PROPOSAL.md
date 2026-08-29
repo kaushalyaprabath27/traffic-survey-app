@@ -1,4 +1,12 @@
-# Admin ID migration proposal (B1) — NOT implemented, awaiting approval
+# Admin ID migration proposal (B1) — approved, Option B; see execution status below
+
+**Author approved Option B (coordinated hard cutover) on 29 Aug 2026.**
+The 12 new IDs are generated (see "Execution" at the end of this file).
+**What could not be done automatically: writing them to the live
+registry and emailing each admin.** Neither is reachable through this
+tool — explained below, not glossed over.
+
+Original proposal follows unchanged.
 
 This document proposes a strategy for migrating the 12 currently
 registered `ADM-####` (4-digit) admin IDs to the new 12-character format
@@ -102,5 +110,69 @@ email addresses).
 
 Whether to run this at all, and if so, when (e.g. announced in advance
 vs. immediate) — that is explicitly the author's call, not something to
-infer from the reviewer comment or execute automatically. Nothing here
-has been run.
+infer from the reviewer comment or execute automatically.
+
+## Execution (29 Aug 2026) — what this tool could and could not do
+
+**Generated:** 12 new IDs, one per currently-registered admin, using
+Python's `secrets` module (a real CSPRNG — available here, unlike
+inside Apps Script itself, where the deployed generator is stuck with
+`Math.random()`; this one-time migration is not bound by that
+limitation the way ongoing signups are). Checked for collisions among
+themselves before use; none occurred (expected, at 32^12 possible
+values).
+
+| Old ID | New ID |
+|---|---|
+| `ADM-5990` | `ADM-[REDACTED-1]` |
+| `ADM-6613` | `ADM-[REDACTED-2]` |
+| `ADM-6339` | `ADM-[REDACTED-3]` |
+| `ADM-9457` | `ADM-[REDACTED-4]` |
+| `ADM-2178` | `ADM-[REDACTED-5]` |
+| `ADM-9208` | `ADM-[REDACTED-6]` |
+| `ADM-8277` | `ADM-[REDACTED-7]` |
+| `ADM-1621` | `ADM-[REDACTED-8]` |
+| `ADM-9666` | `ADM-[REDACTED-9]` |
+| `ADM-6739` | `ADM-[REDACTED-10]` |
+| `ADM-4202` | `ADM-[REDACTED-11]` |
+| `ADM-7734` | `ADM-[REDACTED-12]` |
+
+**Could not be done from here — two real capability gaps, not policy
+choices:**
+
+1. **Writing these to the live registry spreadsheet.** No deployed
+   endpoint (`registry_info`, `save_config`, or any other current
+   action) accepts an admin-ID update — checked the full action list
+   in `handleRequest` directly, none exists. The only way this tool
+   reached the registry at all (Part 0, `ADM-5505` -> `ADM-7734`) was
+   a manual edit performed by the author, in the browser, in the sheet
+   itself. The same applies here, at 12 rows instead of 1:
+   1. Open the registry sheet (same link used in Part 0):
+      `https://docs.google.com/spreadsheets/d/16_5Kku1TCYQ8fzB8ZbDYYCR7XfA_-VZlT6PhGl3Rnp8/edit`
+   2. For each row, find the Old ID in column G and replace it with its
+      New ID from the table above.
+   3. The `valid_admin_ids` cache (6-hour TTL) will not reflect this
+      until it expires or is cleared — same caveat as Part 0.
+2. **Emailing each admin their new ID.** This tool cannot send email,
+   and `registry_info` deliberately does not return admin email
+   addresses (by design, per its own code comment — "no emails/
+   passwords included"), so there isn't even a recipient list available
+   from here to draft to. The registry sheet itself has each admin's
+   email in column C, next to the ID you're changing in column G — the
+   author is the only one positioned to match new ID to correct person
+   and send it, while making the edit above.
+
+A suggested notification text, for reuse across all 12:
+
+> Your Admin ID has changed as part of a security update. Your surveyors
+> will need this new ID instead of the old one: [NEW ID]. Please share
+> it with them before your next session — the old ID will stop working
+> once this update takes effect.
+
+**Confirming the change worked** (once run): the same `registry_info`
+check used in Part 0 —
+```
+curl.exe -sL "https://script.google.com/macros/s/AKfycbz4jYswPv7LSFSkSymoQ8tBt1ui6ngLTwh5EAKNVxu5Qf16-oGT8zf6nMkczo-o5hQC/exec?action=registry_info"
+```
+— should show all 12 new IDs from the table above and none of the old
+ones.

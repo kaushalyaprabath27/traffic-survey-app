@@ -560,3 +560,33 @@ in the manuscript's Limitations cannot be resolved from this data.
   merge/cut proposal and the R2-11 cover-letter sentence
   (`MethodsX_latex/SUBMISSION_NOTES.md` §8-9) -- neither applied,
   awaiting the author's decision.
+
+## Post-Part-D author decisions (29 Aug 2026)
+
+Three items raised in Part 0/B/C put to the author directly. Recorded
+here, not inferred.
+
+- **C1 (`MainRoad.xlsx`)**: confirmed by the author to be a different,
+  unrelated session (not the missing 14 July matched table). No
+  manuscript change needed; `REVISION_DECISIONS_NEEDED.md` updated to
+  mark this resolved.
+- **B1 (Admin ID migration)**: **approved, Option B.** 12 new IDs
+  generated (Python `secrets`, a real CSPRNG -- not bound by the
+  in-app generator's `Math.random()` limitation, since this migration
+  runs outside Apps Script). **Could not be completed end-to-end from
+  here**: no deployed backend action accepts an admin-ID write (checked
+  the full `handleRequest` action list directly), so the actual
+  registry edit needs the same manual spreadsheet process used for the
+  single `ADM-5505` rotation in Part 0, scaled to 12 rows. Email
+  notification to each admin also cannot be done from here --
+  `registry_info` deliberately does not return admin emails, so there
+  is no recipient list available to this tool even if it could send
+  mail. Full mapping table and exact instructions in
+  `docs/ADMIN_ID_MIGRATION_PROPOSAL.md`. Manuscript's B1 paragraph
+  left as "not-yet-executed" until the author confirms the live edit
+  is actually done (re-check via `registry_info`, same as Part 0).
+- **B5 (data minimization)**: **declined.** Author's reasoning:
+  free-text names are easier for an administrator to manage day-to-day
+  than distributing and tracking a separate ID per surveyor. Not
+  implemented; `docs/DATA_MINIMIZATION_PROPOSAL.md` updated to record
+  the decision.
