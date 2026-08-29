@@ -513,3 +513,50 @@ headers, not just a sample) plus `README.md` and
 exists anywhere in this dataset -- only date, time, direction/action,
 vehicle-type, and count columns. The unrecorded-site-detail gap named
 in the manuscript's Limitations cannot be resolved from this data.
+
+## Part D verification (after Parts A2 and B)
+
+- **Recomputed Tables 8/9 from source** (`python
+  analysis/recompute_validation.py`): every figure currently in the
+  manuscript matches exactly, `excluding_duplicates` branch, no
+  disagreement -- 37/37, 36/37, 37/37 (institutional-idling); 147/148,
+  147/147, 146/147 (roundabout); 91/92, 91/91, 90/91 (t-junction);
+  11/11, 100%/100%/90.9% (bus-idling); 23/23, 100%/100% (pedestrian).
+  Main-road (Tables 5/6/7) has no committed source to recompute against
+  (Limitations, above; C1 below) -- checked for internal arithmetic
+  consistency only, as in round 1.
+- **Withdrawn 145/80/2 distribution**: confirmed absent from the
+  manuscript as an assertion -- it appears once, correctly, as one of
+  three admissible triples in the "no single distribution is stated"
+  sentence. Still present, unchanged, in `docs/REVIEWER_RESPONSE.md`
+  and `REVISION_TODO.md` -- not edited, per the standing instruction
+  to notify before touching those files.
+- **Grep for "at or above"**: zero remaining instances (A2-4 fixed the
+  only one). **Grep for "up to"**: three instances, all legitimate
+  technical descriptions of the actual 50-event batch cap, not
+  overclaiming a range -- none needed fixing.
+- **"Independent"/"independently"**: 12 remaining instances, all
+  already reported for a ruling under A2-3 above; none newly found.
+- **No Admin ID/PIN/sheet URL/email/personal name in any figure**:
+  reconfirmed against the current compiled PDF (Figure 2's T-Junction
+  panel shows `ADM-0000`, not a real ID) -- same check as Part 0, no
+  regression.
+- **Recompiled twice** (XeLaTeX), clean, 21 pages. No table spans a
+  page break behind an oversized cell; no page is mostly whitespace.
+- **Test suite**: this repository has no formal test framework
+  (no `package.json`, no Jest/Mocha). `test.js` is the closest thing
+  to one -- a standalone, DOM-mocked smoke test of legacy setup-screen
+  logic. Ran clean (`node test.js`, exit 0, no output). **It does not
+  exercise `queueDataLocally`, `handleStorageFull`, or any of the B2
+  fix** -- it's a self-contained duplicate of older logic, not a
+  `require()` of the actual `app.js` files, so it cannot cover code
+  that didn't exist when it was written. B2's own verification
+  (`analysis/quota_exceeded_probe.py`, run before and after the fix)
+  is the real test coverage for that change. `patch.js` and
+  `patch2.js` are one-off historical code-injection scripts from an
+  earlier round, not tests -- not run, since re-running them would
+  attempt to re-inject old code over this round's edits.
+- **Outstanding from round 1, still outstanding**: the Table 3
+  merge/cut proposal and the R2-11 cover-letter sentence
+  (`MethodsX_latex/SUBMISSION_NOTES.md` §8-9) -- neither applied,
+  awaiting the author's decision.
