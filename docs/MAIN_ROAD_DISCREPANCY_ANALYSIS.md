@@ -52,16 +52,13 @@ session:
 | 20--25 min | 4 |
 | 25--30 min | 0 |
 
-Every discrepancy falls between 13:36:20 and 13:56:11 -- all ten in the
-middle four of the six windows, with none in the first five minutes and
-none in the final five. This is not consistent with a prior
-characterization of this data as "isolated single events rather than in a
-cluster." It is closer to a concentration in the middle of the session
-that eases off by the end, not a rise sustained to the end, though ten
-events are too few to distinguish a genuine mid-session effect (for
-example, fatigue that eases as the session winds down) from chance
-clustering with any confidence -- both readings remain plausible, and this
-data does not adjudicate between them.
+Every discrepancy falls between 13:36:20 and 13:56:11. Nine of the ten
+fall in windows three to five (10-25 min); one falls in window one (0-5
+min); none fall in windows two or six. Ten events are too few to
+distinguish any genuine within-session pattern from chance clustering, so
+no interpretation is drawn from this distribution; it is reported here so
+a reader checking the discrepancy timestamps does not have to derive it
+themselves.
 
 ## Misclassification pattern
 

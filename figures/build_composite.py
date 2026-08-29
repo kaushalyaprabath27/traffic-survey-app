@@ -14,12 +14,14 @@ modules = [
     ("institutional-idling", "Institutional Idling"),
 ]
 
-# Landscape layout: all six phone-shaped screenshots in a single row, so the
-# overall composite is wide rather than the earlier near-square 3x2 grid.
-# Cell size is 3x the original (380x620 -> 1140x1860) to match the
-# screenshots' own 3x device_scale_factor capture (take_screenshots.py),
-# giving real pixel detail rather than upsampled interpolation, so the
-# composite can be tagged at 500 dpi honestly.
+# 2x3 grid (2 rows, 3 columns): the earlier single-row layout (six cells
+# wide) is unreadable at MethodsX print column width -- each phone
+# screenshot shrinks too far. A 2x3 grid halves the number of columns,
+# roughly doubling each cell's printed width for the same page width.
+# Cell size is 3x the original per-cell size (380x620 -> 1140x1860) to
+# match the screenshots' own 3x device_scale_factor capture
+# (take_screenshots.py), giving real pixel detail rather than upsampled
+# interpolation, so the composite can be tagged at 500 dpi honestly.
 CELL_W, CELL_H = 1140, 1860
 LABEL_H = 150
 PAD = 42
@@ -43,7 +45,7 @@ for slug, label in modules:
         img = canvas
     cells.append((img, label))
 
-cols, rows = 6, 1
+cols, rows = 3, 2
 total_w = cols * CELL_W + (cols + 1) * PAD
 total_h = rows * (CELL_H + LABEL_H) + (rows + 1) * PAD
 
