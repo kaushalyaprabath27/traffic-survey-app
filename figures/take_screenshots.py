@@ -7,7 +7,7 @@ os.makedirs(OUT_DIR, exist_ok=True)
 
 modules = ["main-road", "roundabout", "t-junction", "pedestrian", "bus-idling", "institutional-idling"]
 
-params = "?skipSetup=true&admin=ADM-5505&name=Demo+Surveyor&loc=Demo+Location&locNum=1&adminName=Demo+Admin"
+params = "?skipSetup=true&admin=ADM-0000&name=Demo+Surveyor&loc=Demo+Location&locNum=1&adminName=Demo+Admin"
 
 # Direct DOM manipulation fallback, in case a module's own skipSetup init
 # throws before reaching the screen-swap (e.g. roundabout/app.js calls the
