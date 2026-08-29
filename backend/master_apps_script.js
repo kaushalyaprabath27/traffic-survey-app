@@ -15,6 +15,35 @@
 
 const REGISTRY_SHEET_NAME = "Admin_Registry";
 
+// --- Admin ID generation -------------------------------------------------
+// MethodsX revision r2, B1: widened from "ADM-" + 4 digits (1000-9999,
+// 9000 possible values -- not 10,000; the prior manuscript text
+// overstated the space by 1000) to "ADM-" + 12 characters from a
+// 32-symbol alphabet excluding visually confusable glyphs (0/O, 1/I, and
+// lowercase L is excluded entirely by using uppercase only). This alone
+// makes blind enumeration through the rate-limited network API
+// infeasible (32^12 =~ 1.15e18 possible suffixes), independent of
+// anything the platform itself exposes for caller-identity rate
+// limiting or lockout.
+//
+// Apps Script exposes no cryptographically secure RNG (no
+// crypto.getRandomValues, no Node crypto module equivalent) -- only
+// Math.random(), which is not cryptographically secure. This widening
+// is therefore a real increase in the size of the space an external
+// caller must guess through the network API, not a claim that the
+// value is unpredictable to an attacker who could somehow observe the
+// underlying PRNG's internal state directly. Disclosed as such, not
+// overstated.
+const ADMIN_ID_ALPHABET = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ"; // excludes 0, 1, I, O
+const ADMIN_ID_SUFFIX_LENGTH = 12;
+function generateAdminIdSuffix() {
+  let out = "";
+  for (let i = 0; i < ADMIN_ID_SUFFIX_LENGTH; i++) {
+    out += ADMIN_ID_ALPHABET.charAt(Math.floor(Math.random() * ADMIN_ID_ALPHABET.length));
+  }
+  return out;
+}
+
 function getRegistrySpreadsheet() {
   const props = PropertiesService.getScriptProperties();
   let id = props.getProperty("REGISTRY_SHEET_ID");
@@ -222,7 +251,7 @@ function handleVerifyOTP(data) {
     return responseJson({status: "error", message: "Incorrect OTP code."});
   }
   
-  const adminId = "ADM-" + Math.floor(1000 + Math.random() * 9000);
+  const adminId = "ADM-" + generateAdminIdSuffix();
   const newSs = SpreadsheetApp.create("Traffic Survey Data - " + cachedData.name + " (" + adminId + ")");
   
   const sheets = [

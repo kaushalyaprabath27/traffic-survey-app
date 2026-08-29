@@ -12,8 +12,10 @@
  *     of the summary rather than guessed.
  *
  * Usage:
- *   node loadtest.js --mode=representative --duration=600 --adminId=ADM-5505
- *   node loadtest.js --mode=worstcase --surveyors=34 --duration=600 --adminId=ADM-5505
+ *   node loadtest.js --mode=representative --duration=600 --adminId=<your registered admin ID>
+ *   node loadtest.js --mode=worstcase --surveyors=34 --duration=600 --adminId=<your registered admin ID>
+ *   (the admin ID actually used for the load test reported in docs/loadtest_results.md
+ *   has since been rotated -- see REVISION_CHANGELOG.md, MethodsX revision r2, Part 0)
  *
  * Env override: LOADTEST_APPS_SCRIPT_URL to point at a different endpoint.
  */
@@ -42,7 +44,7 @@ const SYNC_INTERVAL_MS = 15000; // matches main-road/app.js:42 — not configura
 const MAX_BATCH_SIZE = 50;      // matches main-road/app.js:286 — not configurable, this is what's deployed
 const ADMIN_ID = argv.adminId || process.env.LOADTEST_ADMIN_ID;
 if (!ADMIN_ID) {
-  console.error('ERROR: --adminId=<registered admin id> is required (e.g. --adminId=ADM-5505)');
+  console.error('ERROR: --adminId=<registered admin id> is required (e.g. --adminId=ADM-7K4QX9M2FZPW)');
   process.exit(1);
 }
 

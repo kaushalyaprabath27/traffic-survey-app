@@ -389,20 +389,56 @@ function undoLastAction() {
 
 function queueDataLocally(data) {
     if (navigator.vibrate) { navigator.vibrate(0); setTimeout(() => navigator.vibrate(40), 10); }
-    
+
     let queue = [];
     try { queue = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch(e){}
     queue.push(data);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(queue));
+    try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(queue));
+    } catch (e) {
+        handleStorageFull(data, e);
+        return;
+    }
 
     let secretQueue = [];
     try { secretQueue = JSON.parse(localStorage.getItem('traffic_survey_secret_backup') || '[]'); } catch(e){}
     secretQueue.push(data);
-    localStorage.setItem('traffic_survey_secret_backup', JSON.stringify(secretQueue));
+    try {
+        localStorage.setItem('traffic_survey_secret_backup', JSON.stringify(secretQueue));
+    } catch (e) {
+        handleStorageFull(data, e);
+        return;
+    }
 
     updateSessionCounter(1);
     if(typeof showToast === 'function') showToast('Saved locally', 'success');
-    updateSyncStatus(); 
+    updateSyncStatus();
+}
+
+// B2 fix (MethodsX revision r2): see main-road/app.js for the full
+// explanation -- this duplicated function had the same uncaught-throw
+// gap, confirmed the same way (analysis/quota_exceeded_probe.py).
+function handleStorageFull(data, err) {
+    console.error('localStorage full, event NOT saved:', err, data);
+    if (typeof showToast === 'function') showToast('STORAGE FULL — this entry was NOT saved!', 'error');
+    showPersistentStorageWarning();
+    if (navigator.onLine && typeof syncOfflineQueue === 'function') syncOfflineQueue();
+}
+
+let _storageWarningEl = null;
+function showPersistentStorageWarning() {
+    if (_storageWarningEl && document.body.contains(_storageWarningEl)) return;
+    _storageWarningEl = document.createElement('div');
+    _storageWarningEl.setAttribute('role', 'alert');
+    _storageWarningEl.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:99999;background:#b91c1c;color:#fff;padding:12px 16px;font-weight:bold;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.4);';
+    _storageWarningEl.innerHTML = '⚠️ DEVICE STORAGE FULL — new taps are NOT being saved. Sync now or free up space. <button id="storage-warning-dismiss" style="margin-left:12px;background:#fff;color:#b91c1c;border:none;border-radius:4px;padding:4px 10px;font-weight:bold;cursor:pointer;">Dismiss</button>';
+    document.body.prepend(_storageWarningEl);
+    document.getElementById('storage-warning-dismiss').addEventListener('click', () => {
+        if (_storageWarningEl && document.body.contains(_storageWarningEl)) {
+            document.body.removeChild(_storageWarningEl);
+        }
+        _storageWarningEl = null;
+    });
 }
 
 function syncOfflineQueue() {

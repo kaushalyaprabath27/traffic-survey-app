@@ -313,3 +313,203 @@ support.
 - Withdrawn "145 vehicles" distribution: confirmed absent from the
   manuscript (present in `docs/REVIEWER_RESPONSE.md` and
   `REVISION_TODO.md` only -- reported above, not edited).
+
+## Round 2, Part B (repository/code changes)
+
+### B1: Admin ID identifier space
+
+Located the generator (`backend/master_apps_script.js`, `handleVerifyOTP`)
+and its only functional call site. Frontend call sites checked: no
+format-validating regex exists anywhere (`isValidAdminId` does plain
+list membership, format-agnostic); only cosmetic placeholder text in
+`index.html` and CLI help text in `tools/loadtest/loadtest.js` assumed
+the old 4-digit format, both updated.
+
+**Premise check: partially wrong, as found.** The prior manuscript and
+the reviewer's comment both stated the identifier space as 10,000
+values. From the actual generator (`Math.floor(1000 + Math.random() *
+9000)`), the real space is **9,000** (1,000-9,999), not 10,000.
+Enumeration at the 300/min rate limit is ~30 minutes, not ~33. Doesn't
+change the conclusion (guessable either way), but the manuscript now
+states the number the code actually produces, not the number a naive
+digit-count would suggest.
+
+Widened to `ADM-` + 12 characters from a 32-symbol alphabet excluding
+confusable glyphs (0/O, 1/I, lowercase excluded entirely) --
+~1.15x10^18 possible suffixes. No cryptographic RNG is exposed by Apps
+Script (checked; only `Math.random()` is available), disclosed as such
+in both the code comment and the manuscript rather than overclaiming
+unpredictability.
+
+Migration of the 12 already-issued 4-digit IDs is **proposed, not
+implemented** -- `docs/ADMIN_ID_MIGRATION_PROPOSAL.md`, recommending a
+coordinated one-time cutover (the same process already done by hand
+once for `ADM-5505` in Part 0) over a compatibility-window or
+do-nothing alternative. Awaiting approval before any live registry
+write.
+
+Manuscript's Security model subsection rewritten: no longer attributes
+the weakness to "the same platform reason" as the OTP finding -- the
+identifier space is the authors' own choice, unrelated to what Apps
+Script exposes for caller-identity rate limiting. Added the
+compounding-DoS note (enumerating the old space would have saturated
+the shared rate limit for its full ~30 minutes, so a data-integrity
+attack on one admin was simultaneously a DoS on every other admin on
+the deployment). OTP paragraph strengthened with the actual cache TTL
+(900s, confirmed from code) and the actual space (900,000 values, not
+10^6 -- another premise correction), quantifying that a full-budget
+guessing attempt covers ~0.5% of the space while consuming the entire
+shared request budget for that window.
+
+### B2: Uncaught `QuotaExceededError`
+
+**Tested before fixing**, per instruction. Built
+`analysis/quota_exceeded_probe.py`: fills `localStorage` to the exact
+byte (binary search, same method as the A2-6 quota probe) against the
+*real app* served over a real HTTP origin, then exercises the actual
+tap path (`.vehicle-btn` click) and inspects queue/backup/counter
+state before and after.
+
+**Result, pre-fix:** the tap was silently lost. `QuotaExceededError`
+thrown and uncaught inside `queueDataLocally`; neither the main queue
+nor the backup queue was written; the on-screen counter did not
+increment; no toast, no error, nothing visible to the surveyor. Page
+remained responsive (no freeze), no corruption of the existing queue,
+and a tap made after freeing space succeeded normally with no lasting
+damage -- confirmed across two consecutive full-storage taps and one
+post-recovery tap. Browser: headless Chromium 151.0.7922.34.
+
+**Then fixed**, in all six modules (each has its own duplicated copy of
+`queueDataLocally`, confirmed via grep before touching any of them):
+both `localStorage.setItem` calls wrapped in try/catch; on failure, a
+new `handleStorageFull()` logs loudly, shows a persistent on-screen
+warning banner (not a 3-second toast -- stays until dismissed,
+confirmed rendering correctly via screenshot), and attempts an
+immediate sync in case draining the existing backlog frees space for
+the next tap. Re-ran the probe against the patched code to confirm the
+fix actually fires (it does) and that the previously-silent failure is
+now loud.
+
+**The finding is preserved, not erased**, per instruction: Storage
+ceiling and Limitations both now state explicitly that the six
+validation sessions ran under the old silent-failure behavior, since
+none of them approached the ceiling and the fix postdates them. Table
+2 gained a new row ("Storage-full failure handling") moving this item
+from asserted-only to tested -- there was no existing row for it to
+relabel, so one was added rather than repurposing an unrelated row
+(the "Data recovery" row's "asserted from code inspection" language
+covers the *export function*, a genuinely still-untested different
+item, and was correctly left alone).
+
+### B3: Load-test arithmetic reconciliation
+
+**Why 179, not ~250** — settled from the raw per-request CSV timestamps,
+not a hypothesis. Computed real inter-request gaps per surveyor
+(16.3-25.7s, all above the nominal 15s interval, tracking each
+surveyor's own average request latency). Confirmed from code that
+`syncOfflineQueue()` returns immediately with no request sent if a
+sync is already in flight (`isSyncing` guard) or the queue is empty --
+neither was previously documented in "Offline-first data capture" as a
+request-suppressing mechanism; both now are. Summing `600s /
+avg_gap` across the six per-module rows gives ~177, matching the
+observed 179.
+
+**"6 taps/sec combined" -- not corrected to 5.71 as literally
+instructed, and here's why.** Checked the harness source
+(`tools/loadtest/loadtest.js`): tap generation stops exactly at the
+600s nominal duration; the extra ~25s in the reported 625s total is a
+pure drain tail with zero new taps generated. 3,570 events / 600s
+(the actual generation window) = 5.95, essentially 6/s -- the existing
+footnote is correct as a description of the generation rate. The
+reviewer's 5.71 comes from dividing by the 625s figure, which includes
+that drain tail and is therefore the wrong denominator for a
+per-second generation rate. Per ground rule 5, corrected the
+*ambiguity* (added the exact arithmetic and named the drain-tail
+effect) rather than replacing an accurate figure with a less accurate
+one.
+
+**Mean (40.62) below median (50) in the worst-case row -- confirmed
+and explained from the logs, not asserted.** The two figures measure
+different things: 45.24 (this doc, and the harness's own summary JSON)
+is the mean of the `batch_size` field across all 498 *attempted*
+requests, including the 46 rate-limited failures (which all attempted
+a full 50-event batch, since failures happen precisely when batches
+are largest). Table 4's 40.62 is successful events (20,230) divided by
+*all* 498 requests sent -- diluted by the 46 zero-yield attempts
+without changing the size distribution of batches that actually
+succeeded. Directly verified against the raw CSV: mean of the 452
+successful-only rows is 44.76.
+
+`docs/loadtest_results.md` updated with the full per-surveyor gap
+table and the two-different-averages reconciliation, so this doesn't
+read as an internal inconsistency in a future check.
+
+### B4: Result-to-code-version mapping
+
+`docs/RESULT_PROVENANCE.md` (recommended and placed as supplementary
+material, with a one-sentence pointer added to Resource availability
+in the manuscript body, per the task's own "recommend which"
+instruction). Covers Table 4, all six validation sessions, the
+password migration, and the idempotency confirmation, with commit SHA
+and backend deployment state for each. Main-road's own result has no
+committed source data to cite a SHA for -- stated plainly rather than
+invented.
+
+**Would re-running the load test post-dedup change the request count
+or drain time?** Reasoned from what the dedup fix actually does
+(rejects a retried batch after a lost acknowledgment following a
+successful write) against what the original logs actually contain
+(checked both CSVs directly): every logged outcome is `success` or a
+clean `app_error` rate-limit rejection that never reached the
+sheet-write step. Neither log contains the specific lost-acknowledgment
+scenario the dedup fix addresses, and the fix doesn't touch sync
+timing or batching logic at all -- so no change to request count or
+drain time is expected under the same conditions. **Not re-run against
+the live backend**, per instruction.
+
+### B5: Repository items
+
+**Dead code -- not removed, because it isn't dead.** Instructed to
+confirm the visible "Export Local Backup" button works on the setup
+screen and the active survey header before removing the five-tap
+gesture handler. It does not: the visible button exists on the setup
+screen of three modules only (main-road, roundabout, t-junction); the
+other three (pedestrian, bus-idling, institutional-idling) have no
+visible export control on *any* screen; and **no module has this
+control on its active survey header at all**. The five-tap gesture is
+the only mid-session export path that exists, in every module, and the
+only export path of any kind in three of them. Removing it, as
+literally instructed, would have deleted the only backup-export
+mechanism for half the application's modules.
+
+This also means the manuscript's existing claim -- "the control is now
+also a labeled, visible button on both the setup screen and the active
+survey header" -- was false as written, independent of the task's own
+premise. Corrected in Data integrity safeguards to state the actual,
+verified coverage, and to name this as a correction of an overclaim
+found during this revision rather than passing over it silently. A fix
+(extending the visible button to the active survey header of all six
+modules, and to the setup screen of the three currently missing it) is
+named as not-yet-implemented, not applied here, since it's a UI change
+beyond the dead-code removal actually requested and the premise for
+that removal didn't hold.
+
+**Data minimization -- proposed, not applied**, per instruction.
+`docs/DATA_MINIMIZATION_PROPOSAL.md`: replacing the free-text
+`name` field with a decoupled surveyor identifier. Two designs
+proposed (admin-assigned code vs. app-generated identifier); the
+app-generated option recommended because it removes the free-text name
+channel structurally rather than depending on a surveyor's compliance
+with a relabeled field. Full list of what would need to change (six
+`index.html`/`app.js` pairs, `backend/master_apps_script.js`'s column
+mapping, `docs/DATA_SCHEMA.md`) is in the proposal. No live Sheet
+touched.
+
+**Site details -- checked, not found, not written into the
+manuscript**, per instruction. Inspected all five `raw_matched.xlsx`
+files in `data/validation/` directly (via `openpyxl`, all rows and
+headers, not just a sample) plus `README.md` and
+`validation_summary.json`. No location, site, address, or GPS field
+exists anywhere in this dataset -- only date, time, direction/action,
+vehicle-type, and count columns. The unrecorded-site-detail gap named
+in the manuscript's Limitations cannot be resolved from this data.

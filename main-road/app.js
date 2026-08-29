@@ -280,17 +280,62 @@ function queueDataLocally(data) {
     // 2. Add to Main Queue (for syncing)
     let queue = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
     queue.push(data);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(queue));
+    try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(queue));
+    } catch (e) {
+        handleStorageFull(data, e);
+        return;
+    }
 
     // 3. Add to Secret Backup Queue (never deleted on sync)
     let secretQueue = JSON.parse(localStorage.getItem('traffic_survey_secret_backup') || '[]');
     secretQueue.push(data);
-    localStorage.setItem('traffic_survey_secret_backup', JSON.stringify(secretQueue));
+    try {
+        localStorage.setItem('traffic_survey_secret_backup', JSON.stringify(secretQueue));
+    } catch (e) {
+        handleStorageFull(data, e);
+        return;
+    }
 
     // 4. Update UI
     updateSessionCounter(1);
     showToast('Saved locally', 'success');
     updateNetworkStatus(); // to show pending count
+}
+
+// B2 fix (MethodsX revision r2): localStorage.setItem throws
+// QuotaExceededError once the origin's quota is exhausted (Storage
+// ceiling, Method details). Before this fix that throw was uncaught
+// here, so the tap was silently lost: not queued, not backed up, no
+// counter change, no visible error -- confirmed empirically via
+// analysis/quota_exceeded_probe.py (see REVISION_CHANGELOG.md, B2).
+// This does not recover the dropped event -- there is nowhere left to
+// put it, storage is by definition full at this point -- but it makes
+// the failure loud and immediate instead of silent, shows a warning
+// that persists until dismissed rather than a 3-second toast, and
+// tries an immediate sync in case sending the already-queued backlog
+// frees enough space for the *next* tap to succeed.
+function handleStorageFull(data, err) {
+    console.error('localStorage full, event NOT saved:', err, data);
+    showToast('STORAGE FULL — this entry was NOT saved!', 'error');
+    showPersistentStorageWarning();
+    if (navigator.onLine) syncOfflineQueue();
+}
+
+let _storageWarningEl = null;
+function showPersistentStorageWarning() {
+    if (_storageWarningEl && document.body.contains(_storageWarningEl)) return;
+    _storageWarningEl = document.createElement('div');
+    _storageWarningEl.setAttribute('role', 'alert');
+    _storageWarningEl.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:99999;background:#b91c1c;color:#fff;padding:12px 16px;font-weight:bold;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.4);';
+    _storageWarningEl.innerHTML = '⚠️ DEVICE STORAGE FULL — new taps are NOT being saved. Sync now or free up space. <button id="storage-warning-dismiss" style="margin-left:12px;background:#fff;color:#b91c1c;border:none;border-radius:4px;padding:4px 10px;font-weight:bold;cursor:pointer;">Dismiss</button>';
+    document.body.prepend(_storageWarningEl);
+    document.getElementById('storage-warning-dismiss').addEventListener('click', () => {
+        if (_storageWarningEl && document.body.contains(_storageWarningEl)) {
+            document.body.removeChild(_storageWarningEl);
+        }
+        _storageWarningEl = null;
+    });
 }
 
 function syncOfflineQueue() {
