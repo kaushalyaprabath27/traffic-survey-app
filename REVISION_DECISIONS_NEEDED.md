@@ -7,10 +7,15 @@ text, nothing marked resolved. Report only.
 
 ## C1 — Main-road reproducibility: independent search, found something
 
-**Resolved — author confirmed (29 Aug 2026): `MainRoad.xlsx` is a
-different, unrelated session.** No manuscript change needed; the
-existing "not retained" Limitations text stands. Findings kept below
-for the record.
+**Update (30 Aug 2026):** author confirmed `MainRoad.xlsx` (below) is a
+different, unrelated session — that part stands resolved. The author
+also states the 14 July video and an export of the app's own counts
+for that session are both still retained (outside this repository, not
+currently locatable as a specific file, but not deleted). Limitations
+updated accordingly: the raw materials are retained and re-matching
+has not been done, rather than implying re-derivation is impossible.
+**Not re-derived here** — that would mean re-matching ~230 events
+against video, real work, not something to do without being asked.
 
 ### What was searched
 
@@ -139,10 +144,12 @@ confirm or correct it against.
 
 ### Inter-rater reliability
 
-Footage for all six sessions has been deleted (stated in the
-manuscript's own Limitations); a second rating pass is therefore not
-possible on the original footage. Recorded as an open item, no action
-taken.
+**Reopened (30 Aug 2026):** the manuscript previously stated footage
+had already been deleted; the author has clarified it is retained
+until publication is approved, not yet deleted. A second rating pass
+is therefore still possible in principle, on the original footage,
+before that point. Recorded as an open item -- whether to actually
+arrange a second rater is your call, not attempted here.
 
 ### Surveyor consent
 

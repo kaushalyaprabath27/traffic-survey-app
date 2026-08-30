@@ -741,3 +741,28 @@ history, and was left alone.
 Recompiled twice, clean, 21 pages (unchanged). Two new minor underfull
 hboxes on the idempotency paragraph's page (cosmetic line-spacing only,
 same class of pre-existing warning as elsewhere in this document).
+
+## Round 3, follow-up 3 (30 Aug 2026): main-road reproducibility and footage-retention timing corrected
+
+Author corrected two claims in this session, both applied:
+
+1. **Limitations' main-road reproducibility sentence overstated
+   impossibility.** The video and an export of the app's own counts
+   for the 14 July session are still retained by the author (outside
+   this repository); only the specific matched comparison isn't
+   currently locatable. Manuscript no longer says re-derivation
+   "cannot" happen from "anything currently committed" -- states the
+   raw materials are retained and re-matching has not been done.
+2. **Ethics statement claimed footage was already deleted "upon
+   submission."** This manuscript has not been submitted yet, and the
+   author confirmed the actual policy is deletion after publication is
+   approved. Corrected from past tense (already deleted) to present/
+   future tense (retained now, will be deleted once approved) for all
+   six sessions.
+
+Consequence for C3 (`REVISION_DECISIONS_NEEDED.md`): since footage is
+not actually gone, inter-rater reliability is reopened as a genuine
+possibility before publication -- previously recorded as closed
+because the manuscript said footage was deleted.
+
+Recompiled twice, clean, 21 pages (unchanged).
