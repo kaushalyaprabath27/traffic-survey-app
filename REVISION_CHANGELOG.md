@@ -672,3 +672,37 @@ any figure (unchanged since Part 0; no figure regenerated this round).
   `REVISION_DECISIONS_NEEDED.md` already contains -- C1 already marked
   resolved (author confirmed `MainRoad.xlsx` unrelated), C2's evidence
   already reported. Nothing to add.
+
+## Round 3, follow-up (30 Aug 2026): Table 3 merge/cut applied
+
+Author confirmed: cut Table 3, fold its one non-redundant row into the
+"Offline-first data capture and batch synchronization" paragraph.
+
+Table 3 (three-row qualitative comparison: requests-per-event, backend
+executions, resilience to lost connectivity) removed entirely. Its one
+row not already covered by the surrounding prose folded in as the exact
+sentence from `SUBMISSION_NOTES.md` §9: "Unlike the original per-tap
+version, where a lost connection made a tap fail or block, a lost
+connection now leaves the event queued locally until the device
+reconnects."
+
+Every subsequent table renumbered down by one throughout the entire
+manuscript (old Table 4 -> new Table 3, ..., old Table 9 -> new Table
+8) -- captions, every in-text cross-reference, Table 2's
+evidence-location column (`Table 5/6` -> `Table 4/5`, `Table 8/9` ->
+`Table 7/8`), the abstract's `Tables 5--9` -> `Tables 4--8`, and the
+combined six-module paragraph's `Tables 5 to 9` -> `Tables 4 to 8`.
+Done with a single-pass, order-safe scripted substitution (not manual
+find-and-replace, to avoid double-shifting a reference during a
+multi-pass edit) and verified two ways: grepped the rebuilt source for
+any remaining `Table 9` (none) and for the full renumbered caption
+list (1-8, sequential, no gaps), then visually confirmed the rebuilt
+PDF page by page -- new Table 3 (the load-test results table) sits
+with its caption and both footnotes on one page, Table 2 still fits
+on one page with correctly renumbered evidence-location references.
+
+Recompiled twice, clean, 21 pages (unchanged net -- the removed table
+and the added sentence roughly offset each other).
+
+`MethodsX_latex/SUBMISSION_NOTES.md` §9 updated to record this as
+done, keeping the original proposal text for the record.
