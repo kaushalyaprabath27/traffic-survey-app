@@ -866,3 +866,25 @@ reasoning. Figure 2's caption gained one clause noting the landscape
 orientation and why.
 
 Recompiled twice, clean, 20 pages (unchanged).
+
+## Round 3, follow-up 7 (30 Aug 2026): pre-submission fixes M2-M4
+
+**M2**: Limitations' small-sample list still said "truck (n=8), bus
+(n=6), and van (n=3)" -- stale from before the main-road re-derivation
+(follow-up 5), which raised truck to n=17 (clearing the n<10
+threshold) and changed bus to n=9, van unchanged at n=6. A leftover
+this changelog's own main-road sweep missed at the time. Corrected to
+"bus (n=9) and van (n=6)", truck removed from the list entirely.
+
+**M3**: Table 2 typo, "localStorage is exhauted" -> "exhausted".
+
+**M4**: The committed matched-table path
+(data/validation/main-road_2026-07-14/raw_matched.xlsx) overflowed the
+page margin in \texttt{} (LaTeX doesn't break teletype text at
+slashes/underscores). Wrapped in \url{} instead (hyperref + xurl,
+already loaded in the preamble) at all three occurrences (timing
+paragraph, Table 5's following paragraph, Limitations) -- xurl allows
+\url content to break at "/", confirmed the overflow is gone on the
+rebuilt PDF, not just assumed from the package being loaded.
+
+Recompiled twice, clean, 20 pages (unchanged).
