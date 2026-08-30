@@ -888,3 +888,25 @@ paragraph, Table 5's following paragraph, Limitations) -- xurl allows
 rebuilt PDF, not just assumed from the package being loaded.
 
 Recompiled twice, clean, 20 pages (unchanged).
+
+## Round 3, follow-up 8 (30 Aug 2026): M1, graphical abstract regenerated
+
+The "VIDEO VALIDATION" box in the graphical abstract read "542
+real-world observations" -- stale from before the five-module video
+validation was added; every other figure in the manuscript said 759.
+Author supplied a corrected graphic. Copied to
+figures/graphical_abstract.png (this repository) and
+MethodsX_latex/media/media/image6.png (manuscript source, outside this
+repository); submission/graphical_abstract.pdf re-exported from it at
+the same 300 DPI convention as the version it replaces. Confirmed on
+the rebuilt PDF, both the Abstract prose and the graphical abstract
+image itself now read 759.
+
+Unrelated finding surfaced while checking this: the manuscript's
+Article title field currently reads "An offline-first
+batch-synchronizing progressive web application framework for
+multi-module traffic field surveys" -- not the title this revision has
+used throughout ("A modular, offline-first progressive web application
+suite for traffic field data collection"). Not changed by any edit in
+this changelog; flagged to the author rather than reverted, since the
+change's origin and intent are unknown from here.
