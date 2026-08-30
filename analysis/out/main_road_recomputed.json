@@ -1,0 +1,195 @@
+{
+  "source_file": "data/validation/main-road_2026-07-14/raw_matched.xlsx",
+  "n_records_total": 448,
+  "n_video_confirmed": 448,
+  "n_app_total": 444,
+  "n_matched": 444,
+  "n_misses": 4,
+  "n_extras": 0,
+  "n_class_correct": 443,
+  "n_class_mismatches": 1,
+  "detection_recall_pct_ci": [
+    99.1,
+    97.7,
+    99.7
+  ],
+  "detection_precision_pct_ci": [
+    100.0,
+    99.1,
+    100
+  ],
+  "classification_accuracy_pct_ci": [
+    99.8,
+    98.7,
+    100.0
+  ],
+  "detected_and_correctly_classified_pct_ci": [
+    98.9,
+    97.4,
+    99.5
+  ],
+  "timing": {
+    "n": 444,
+    "mean_signed": -0.065,
+    "mean_abs": 0.164,
+    "sd_signed": 0.411,
+    "within_1s_pct": 99.5,
+    "within_2s_pct": 100.0,
+    "signed_diff_distribution": {
+      "-1": 51,
+      "0": 373,
+      "1": 18,
+      "2": 2
+    },
+    "abs_diff_distribution": {
+      "0": 373,
+      "1": 69,
+      "2": 2
+    }
+  },
+  "per_class": {
+    "Bike": {
+      "n_video_confirmed": 304,
+      "n_detected": 301,
+      "n_correct": 301,
+      "recall": [
+        99.0,
+        97.1,
+        99.7
+      ],
+      "classification_accuracy": [
+        100.0,
+        98.7,
+        100
+      ]
+    },
+    "Bus": {
+      "n_video_confirmed": 9,
+      "n_detected": 9,
+      "n_correct": 9,
+      "recall": [
+        100.0,
+        70.1,
+        100
+      ],
+      "classification_accuracy": [
+        100.0,
+        70.1,
+        100
+      ]
+    },
+    "Car": {
+      "n_video_confirmed": 49,
+      "n_detected": 48,
+      "n_correct": 47,
+      "recall": [
+        98.0,
+        89.3,
+        99.6
+      ],
+      "classification_accuracy": [
+        97.9,
+        89.1,
+        99.6
+      ]
+    },
+    "Truck": {
+      "n_video_confirmed": 17,
+      "n_detected": 17,
+      "n_correct": 17,
+      "recall": [
+        100.0,
+        81.6,
+        100
+      ],
+      "classification_accuracy": [
+        100.0,
+        81.6,
+        100
+      ]
+    },
+    "Tuk Tuk": {
+      "n_video_confirmed": 63,
+      "n_detected": 63,
+      "n_correct": 63,
+      "recall": [
+        100.0,
+        94.3,
+        100
+      ],
+      "classification_accuracy": [
+        100.0,
+        94.3,
+        100
+      ]
+    },
+    "Van": {
+      "n_video_confirmed": 6,
+      "n_detected": 6,
+      "n_correct": 6,
+      "recall": [
+        100.0,
+        61.0,
+        100
+      ],
+      "classification_accuracy": [
+        100.0,
+        61.0,
+        100
+      ]
+    }
+  },
+  "per_direction": {
+    "Galle": {
+      "n_video_confirmed": 217,
+      "n_detected": 215
+    },
+    "Wakwella": {
+      "n_video_confirmed": 231,
+      "n_detected": 229
+    }
+  },
+  "discrepancies": [
+    {
+      "type": "miss",
+      "video_time": "13:34:33",
+      "video_dir": "Galle",
+      "video_vt": "Bike",
+      "app_time": null,
+      "app_vt": null
+    },
+    {
+      "type": "miss",
+      "video_time": "13:34:38",
+      "video_dir": "Galle",
+      "video_vt": "Car",
+      "app_time": null,
+      "app_vt": null
+    },
+    {
+      "type": "miss",
+      "video_time": "13:36:20",
+      "video_dir": "Wakwella",
+      "video_vt": "Bike",
+      "app_time": null,
+      "app_vt": null
+    },
+    {
+      "type": "misclassification",
+      "video_time": "13:38:21",
+      "video_dir": "Galle",
+      "video_vt": "Car",
+      "app_time": "13:38:21",
+      "app_vt": "Tuk Tuk"
+    },
+    {
+      "type": "miss",
+      "video_time": "13:44:04",
+      "video_dir": "Wakwella",
+      "video_vt": "Bike",
+      "app_time": null,
+      "app_vt": null
+    }
+  ],
+  "n_discrepancies": 5
+}

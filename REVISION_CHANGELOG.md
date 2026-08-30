@@ -773,3 +773,67 @@ Added verbatim, closing sentence of Limitations (no separate
 Conclusion section exists in this template): "Future validation should
 include independent raters, additional locations, and different
 environmental conditions." Recompiled clean, 21 pages.
+
+## Round 3, follow-up 5 (30 Aug 2026): main-road fully re-derived, C1 resolved
+
+The author supplied a complete re-analysis of the 14 July source video
+(`video/App Count.xlsx`, both road directions, columns Date/App
+Time/App Direction/App Vehicle Type/Video Time/Video Direction/Video
+Vehicle Type), replacing the matched table that C1's independent
+search confirmed does not exist anywhere in this repository or its
+history. Committed to `data/validation/main-road_2026-07-14/raw_matched.xlsx`
+(the raw video files themselves, ~1.6GB, were not committed --
+consistent with the other five modules, which also commit only the
+matched spreadsheet, not raw footage). `analysis/recompute_main_road.py`
+recomputes every figure from it, using the exact same Wilson-CI and
+rounding convention as `analysis/recompute_validation.py`
+(z=1.959964, round-half-away-from-zero, 1 decimal place).
+
+**Every main-road figure in the manuscript changed. Full before/after:**
+
+| Figure | Previously published | Recomputed from the new data |
+|---|---|---|
+| Video-confirmed vehicles | 231 | 448 |
+| Application entries | 230 | 444 |
+| Matched pairs | 227 | 444 |
+| Missed by application | 4 | 4 |
+| Unmatched application entries (false positives) | 3 | 0 |
+| Misclassified | 3 | 1 |
+| Detection recall | 98.3% [95.6, 99.3] | 99.1% [97.7, 99.7] |
+| Detection precision | 98.7% [96.2, 99.6] | 100.0% [99.1, 100] |
+| Classification accuracy | 98.7% [96.2, 99.5] | 99.8% [98.7, 100.0] |
+| Detected + correctly classified | 97.0% [93.9, 98.5] | 98.9% [97.4, 99.5] |
+| Mean timing offset | 0.37s (mean absolute, from aggregate only -- underlying per-vehicle distribution previously non-unique, see below) | -0.065s signed / 0.164s mean absolute (SD 0.411), from real per-vehicle data |
+| Within 1s / within 2s | 99.1% / 100% | 99.5% / 100% |
+| Per-class counts (Bike/Tuk-tuk/Car/Truck/Bus/Van) | 157/33/24/8/6/3 (sum 231) | 304/63/49/17/9/6 (sum 448) |
+| Discrepancies (Table 5/6) | 10 (4 missed, 3 misclassified, 3 unmatched) | 5 (4 missed, 1 misclassified, 0 unmatched) |
+| Per-direction breakdown | Not available (named limitation) | Now available: Galle 217 confirmed/215 detected, Wakwella 231/229 |
+| Field rate (events/hour) | 458 | 889.1 |
+| Storage-ceiling time-to-full at field rate | 21-25 hours | 10.9-12.9 hours |
+| Point-events total (main-road + 3 other modules) | 508 | 725 |
+| Grand total video-confirmed observations | 542 | 759 |
+| Module-level recall range (all six modules) | 98.3-100% (main-road was the floor) | 98.9-100% (t-junction is now the floor; main-road's own 99.1% is no longer the minimum) |
+
+**Removed as no longer applicable, not just updated:** the previous
+timing paragraph's "distribution cannot be recovered uniquely, three
+admissible triples" reasoning -- moot now that exact per-vehicle timing
+exists. The "alternative reading" sensitivity paragraph about the three
+unmatched entries and a possible mistimed-and-misclassified single
+vehicle (113s/225s/9s gaps, 228/231 and 224/228 alternate figures) --
+this dataset has zero unmatched entries, so there is no ambiguity left
+to offer an alternative reading of. The Limitations sentences claiming
+the matched table "was not retained" and "cannot be independently
+re-derived" -- replaced with a statement that the table is now
+committed and the figures were recomputed directly from it.
+
+`docs/MAIN_ROAD_DISCREPANCY_ANALYSIS.md` fully rewritten (5
+discrepancies, new binning, no more tolerance-sensitivity/unmatched-entry
+sections since neither applies to this data). `data/validation/README.md`
+updated to include main-road, no longer stating it's excluded.
+`docs/RESULT_PROVENANCE.md` and `docs/STORAGE_CEILING_ANALYSIS.md`
+updated for the new field rate and committed data source.
+`REVISION_DECISIONS_NEEDED.md` C1 marked resolved.
+
+Recompiled twice, clean, 20 pages (down from 21 -- Table 5 shrank from
+10 rows to 5, and several paragraphs shortened once the non-uniqueness
+and alternative-reading reasoning no longer applied).

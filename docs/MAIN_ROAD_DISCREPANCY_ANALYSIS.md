@@ -5,65 +5,65 @@ Method validation summary for the main-road session (14 July 2026), moved
 here to keep the manuscript body at a method-summary level of detail rather
 than a per-timestamp forensic audit.
 
-## Tolerance-sensitivity check
+**Superseded (30 Aug 2026):** this document previously covered ten
+discrepancies (four missed, three misclassified, three unmatched) drawn
+from a per-vehicle matched table that was not retained as a committed
+file. The author has since supplied a full re-analysis of the source
+video (`data/validation/main-road_2026-07-14/raw_matched.xlsx`,
+computed by `analysis/recompute_main_road.py`), which the manuscript
+now reports from directly. That table has zero unmatched entries (every
+application-logged vehicle matched a video-confirmed one) and five
+discrepancies in total. Everything below reflects the current, committed
+data.
 
-Matching was performed at a two-second tolerance (Ground-truth extraction
-and matching, in the manuscript). Re-matching at other tolerances (1, 2, 3,
-5 seconds) to test sensitivity to that choice would require the full
-unmatched raw timestamp lists from both the application export and the
-video-derived record. These were not retained as a separate file for the
-main-road session, so they cannot be reconstructed from the published
-discrepancy list (Table 6) alone. This tolerance-sensitivity analysis is
-therefore not repeated; it is named as a limitation in the manuscript
-instead.
+## Are the five discrepancies clustered in time?
 
-## Are the three unmatched entries genuine false positives?
-
-What can be checked from Table 6 as published is the temporal gap between
-each unmatched entry and the nearest missed detection, to assess whether an
-unmatched entry could plausibly be the same physical vehicle as a nearby
-missed detection, simply mismatched at this tolerance.
-
-| Unmatched entry | Nearest missed detection | Gap | Same class? | Verdict |
-|---|---|---|---|---|
-| 13:54:19 | (nearest missed event) | 113s | -- | Too distant; genuine false positive |
-| 13:56:11 | (nearest missed event) | 225s | -- | Too distant; genuine false positive |
-| 13:49:57 | Truck missed at 13:50:06 | 9s | No (Bike vs. Truck) | Close in time, but different logged class argues against being the same vehicle |
-
-Two of the three are unambiguous genuine false positives. The third is close
-enough in time to warrant checking, but the class mismatch argues against
-it being the same vehicle even at a wider tolerance. The manuscript
-therefore does not smooth this into a uniform "all three are genuine false
-positives" claim, since the data does not uniformly support that for all
-three.
-
-## Are the ten discrepancies clustered in time?
-
-Binning all ten discrepancies (four missed, three misclassified, three
-unmatched) into consecutive five-minute windows across the 30-minute
-session:
+Binning all five discrepancies (four missed, one misclassified) into
+consecutive five-minute windows across the 30-minute-14-second session
+(13:32:22–14:02:36; the final window is 5 minutes 14 seconds, the other
+five are 5 minutes each):
 
 | Window | Discrepancies |
 |---|---|
-| 0--5 min | 1 |
-| 5--10 min | 0 |
-| 10--15 min | 2 |
-| 15--20 min | 3 |
-| 20--25 min | 4 |
-| 25--30 min | 0 |
+| 13:32:22–13:37:22 | 3 |
+| 13:37:22–13:42:22 | 1 |
+| 13:42:22–13:47:22 | 1 |
+| 13:47:22–13:52:22 | 0 |
+| 13:52:22–13:57:22 | 0 |
+| 13:57:22–14:02:36 | 0 |
 
-Every discrepancy falls between 13:36:20 and 13:56:11. Nine of the ten
-fall in windows three to five (10-25 min); one falls in window one (0-5
-min); none fall in windows two or six. Ten events are too few to
-distinguish any genuine within-session pattern from chance clustering, so
-no interpretation is drawn from this distribution; it is reported here so
-a reader checking the discrepancy timestamps does not have to derive it
-themselves.
+Every discrepancy falls between 13:34:33 and 13:44:04 — the first third
+of the session — with none in the second half. Five events are too few
+to distinguish any genuine within-session pattern from chance
+clustering, so no interpretation is drawn from this distribution; it is
+reported here so a reader checking the discrepancy timestamps does not
+have to derive it themselves.
+
+## Discrepancy detail
+
+| Type | App recorded | Video shows | Time | Direction |
+|---|---|---|---|---|
+| Missed detection | — | Bike | 13:34:33 | Galle |
+| Missed detection | — | Car | 13:34:38 | Galle |
+| Missed detection | — | Bike | 13:36:20 | Wakwella |
+| Misclassification | Tuk-tuk | Car | 13:38:21 | Galle |
+| Missed detection | — | Bike | 13:44:04 | Wakwella |
 
 ## Misclassification pattern
 
-All three misclassifications involved a smaller, less visually distinct
-class confused with a similarly sized but different one, consistent with
-the literature's general finding that classification error is driven
-primarily by difficulty recognizing a vehicle's length or form, not by
-missing it altogether [6].
+The single misclassification involved a smaller, less visually distinct
+class (a three-wheeler) confused with a similarly sized but different one
+(a car), consistent with the literature's general finding that
+classification error is driven primarily by difficulty recognizing a
+vehicle's length or form, not by missing it altogether [6]. With only
+one misclassification in this dataset, no broader pattern claim is drawn
+beyond this single instance.
+
+## No unmatched entries in this dataset
+
+Unlike the earlier, unretained matched table, this dataset has zero
+application-logged entries without a video match (checked directly:
+`analysis/recompute_main_road.py`'s `n_extras` field is 0). There is
+consequently no tolerance-sensitivity question to resolve about
+ambiguous unmatched entries, and no "alternative reading" of the
+headline recall/accuracy figures is needed.

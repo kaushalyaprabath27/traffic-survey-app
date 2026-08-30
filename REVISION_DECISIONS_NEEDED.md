@@ -5,17 +5,24 @@ text, nothing marked resolved. Report only.
 
 ---
 
-## C1 — Main-road reproducibility: independent search, found something
+## C1 — Main-road reproducibility: RESOLVED (30 Aug 2026)
 
-**Update (30 Aug 2026):** author confirmed `MainRoad.xlsx` (below) is a
-different, unrelated session — that part stands resolved. The author
-also states the 14 July video and an export of the app's own counts
-for that session are both still retained (outside this repository, not
-currently locatable as a specific file, but not deleted). Limitations
-updated accordingly: the raw materials are retained and re-matching
-has not been done, rather than implying re-derivation is impossible.
-**Not re-derived here** — that would mean re-matching ~230 events
-against video, real work, not something to do without being asked.
+The author supplied a full re-analysis of the 14 July source video
+(`data/validation/main-road_2026-07-14/raw_matched.xlsx`, both road
+directions, 448 video-confirmed vehicles, 5 discrepancies) — a complete
+replacement for the matched table that could not be found anywhere in
+the repository (see the search below, kept for the record). Every
+main-road figure throughout the manuscript (Abstract, Highlights,
+Tables 4-6, Method validation, Limitations) has been recomputed
+directly from this file via `analysis/recompute_main_road.py` and
+updated. The new figures differ materially from what was previously
+published — recall rose from 98.3% to 99.1%, classification accuracy
+from 98.7% to 99.8%, and the discrepancy count fell from 10 to 5 — see
+`REVISION_CHANGELOG.md` for the full before/after list. This is no
+longer a decision needed from the author; it is done.
+
+`MainRoad.xlsx` (below, found during the original search) remains
+confirmed as a different, unrelated session — not used for anything.
 
 ### What was searched
 

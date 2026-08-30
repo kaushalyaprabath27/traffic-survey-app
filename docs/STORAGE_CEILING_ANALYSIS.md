@@ -76,10 +76,13 @@ that combined usage reaches its ceiling at:
 
 ## Time-to-ceiling
 
-At the 14 July field session's observed rate (458 events/hour):
+At the 14 July field session's observed rate (889.1 events/hour --
+recomputed from the full re-matched table, 448 video-confirmed
+vehicles over 30m14s; see `analysis/recompute_main_road.py`, superseding
+the earlier 458 events/hour figure based on a partial dataset):
 
-- optimistic bound: ~25 hours of continuous offline operation
-- pessimistic bound: ~21 hours
+- optimistic bound: ~12.9 hours of continuous offline operation
+- pessimistic bound: ~10.9 hours
 
 At the single-surveyor tap rate used in the load test (up to 3,600
 events/hour per device), the range narrows to 3.2–2.7 hours.
