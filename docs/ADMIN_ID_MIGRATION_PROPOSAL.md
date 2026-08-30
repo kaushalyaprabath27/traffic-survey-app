@@ -122,6 +122,14 @@ limitation the way ongoing signups are). Checked for collisions among
 themselves before use; none occurred (expected, at 32^12 possible
 values).
 
+**New IDs redacted below before this file was pushed to the public
+repository** (30 Aug 2026) -- this file is committed to a public repo,
+and the new IDs aren't live yet, so publishing them here would let
+anyone grab them before the actual registry edit happens. The real
+values were given to the author directly, outside this file, and are
+not otherwise recorded in the repository or its history (rewritten with
+`git filter-branch` before the first push of this branch).
+
 | Old ID | New ID |
 |---|---|
 | `ADM-5990` | `ADM-[REDACTED-1]` |
