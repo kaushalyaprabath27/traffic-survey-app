@@ -14,20 +14,21 @@ modules = [
     ("institutional-idling", "Institutional Idling"),
 ]
 
-# 2x3 grid (2 rows, 3 columns): the earlier single-row layout (six cells
-# wide) is unreadable at MethodsX print column width -- each phone
-# screenshot shrinks too far. A 2x3 grid halves the number of columns,
-# roughly doubling each cell's printed width for the same page width.
-# Cell size is 3x the original per-cell size (380x620 -> 1140x1860) to
-# match the screenshots' own 3x device_scale_factor capture
-# (take_screenshots.py), giving real pixel detail rather than upsampled
-# interpolation, so the composite can be tagged at 500 dpi honestly.
-CELL_W, CELL_H = 1140, 1860
-LABEL_H = 150
+# 2x3 grid (3 rows, 2 columns): screenshots are now landscape (surveyors
+# hold the device landscape in the field), captured at 1300x600 viewport,
+# device_scale_factor=2 -> native 2600x1200 per screenshot. A single row
+# of six landscape cells would be exactly as unreadable at print column
+# width as the original single-row portrait layout was; a 2-column grid
+# (landscape cells stacked in 3 rows) keeps each cell close to full print
+# column width, which is what landscape screenshots need to stay legible.
+# Cell size matches the screenshots' native captured resolution exactly,
+# not upsampled, so the composite can be tagged at 500 dpi honestly.
+CELL_W, CELL_H = 2600, 1200
+LABEL_H = 220
 PAD = 42
 
 try:
-    font = ImageFont.truetype("arialbd.ttf", 78)
+    font = ImageFont.truetype("arialbd.ttf", 170)
 except Exception:
     font = ImageFont.load_default()
 
@@ -45,7 +46,7 @@ for slug, label in modules:
         img = canvas
     cells.append((img, label))
 
-cols, rows = 3, 2
+cols, rows = 2, 3
 total_w = cols * CELL_W + (cols + 1) * PAD
 total_h = rows * (CELL_H + LABEL_H) + (rows + 1) * PAD
 

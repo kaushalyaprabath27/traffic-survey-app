@@ -837,3 +837,32 @@ updated for the new field rate and committed data source.
 Recompiled twice, clean, 20 pages (down from 21 -- Table 5 shrank from
 10 rows to 5, and several paragraphs shortened once the non-uniqueness
 and alternative-reading reasoning no longer applied).
+
+## Round 3, follow-up 6 (30 Aug 2026): Figure 2 recaptured in landscape
+
+Author instruction: show the interfaces in landscape, since that is how
+surveyors actually hold the device in the field.
+
+Tried a plain portrait-to-landscape dimension swap (932x430) first and
+rejected it on direct visual check, not assumption: it cut off
+`bus-idling`'s Start Idling button and counters entirely below the
+fold (a missing primary control), and caused header text overlap in
+`roundabout` and `t-junction` (theme toggle over "Undo", "Online"
+clipped) -- confirmed this persisted regardless of viewport height,
+since it was a horizontal-space problem, not a vertical one. Settled
+on 1300x600 after testing several widths, the narrowest that renders
+every module's header without overlap; all six modules use this same
+viewport so the composite represents one consistent device size rather
+than six different ones. Also let the demo-environment "Apps Script
+URL not configured" warning banner auto-dismiss (waited 4s, matching
+its own 3s timer) instead of force-hiding it, so the capture reflects
+each module's actual behavior.
+
+`build_composite.py` rebuilt for the new landscape aspect ratio: 2x3
+grid (2 columns, 3 rows) of landscape cells, native captured resolution
+(2600x1200/cell), font and label sizing scaled up to match the larger
+cells. `figures/README.md` updated with the full before/after
+reasoning. Figure 2's caption gained one clause noting the landscape
+orientation and why.
+
+Recompiled twice, clean, 20 pages (unchanged).

@@ -22,7 +22,22 @@ patch, rather than a full rebuild, was the appropriate fix here.
 Real screenshots of all six modules' recording interfaces, not mockups. Generated via:
 
 1. `take_screenshots.py` — serves the repository locally (`python -m http.server 8765` from the repo root) and uses Playwright (headless Chromium) to load each module with `?skipSetup=true&admin=ADM-0000&...` (a deep-link the app itself supports, bypassing the setup form) and screenshot the resulting recording screen. `ADM-0000` is a placeholder, not a real registered admin ID -- the deep-link path writes this value straight into the header for display and never validates it against the backend (no network call happens during capture), so a fake value renders identically to a real one. An earlier version of this script used a real registered ID (`ADM-5505`) here; that value was live on the production backend and ended up published, unredacted, in the T-Junction panel of the submitted Figure 2 -- caught in MethodsX revision round 2 (reviewer comment, Part 0). `ADM-0000` is also outside the ID generator's actual output range (`backend/master_apps_script.js`, four digits 1000-9999), so it cannot collide with a real generated ID even by coincidence. Raw screenshots saved to `module_screenshots/`.
-2. `build_composite.py` — arranges the six screenshots into a 3x2 grid, saved as `figure1_module_composite.png` (used as Figure 2 in the manuscript). An earlier version used a single landscape row; this was changed to a 3x2 grid because a six-wide row is unreadable at MethodsX print column width.
+
+   **Landscape capture (30 Aug 2026):** viewport changed from portrait
+   (430x932) to landscape (1300x600) -- this is how surveyors actually
+   hold the device in the field, per the author. A plain width/height
+   swap (932x430) was tried first and rejected on direct visual check:
+   it cut off `bus-idling`'s Start Idling button and counters below the
+   fold (a missing primary control, not a cosmetic issue), and caused
+   header text to overlap in `roundabout` and `t-junction` (the theme
+   toggle icon over "Undo", "Online" clipped) regardless of height.
+   1300x600 was the narrowest width that renders every module's header
+   without overlap; all six modules use this same viewport so the
+   composite represents one consistent device size. The demo-environment
+   "Apps Script URL not configured" warning banner is waited out (4s,
+   matching its own 3s auto-dismiss timer in `showToast()`) rather than
+   force-hidden, so what's captured is each module's real behavior.
+2. `build_composite.py` — arranges the six screenshots into a 2x3 grid (2 columns, 3 rows of landscape cells), saved as `figure1_module_composite.png` (used as Figure 2 in the manuscript), at the screenshots' native captured resolution (2600x1200 per cell, from the 1300x600 viewport at device_scale_factor=2). An earlier version used a single landscape row of six portrait cells; that was changed to a grid because a six-wide row is unreadable at MethodsX print column width, a problem landscape cells would repeat if laid out the same way -- the grid orientation (2 cols x 3 rows) was kept from the portrait version, only the cell aspect ratio and font/label sizing changed to match the new landscape screenshots.
 
 **A real bug surfaced while building this**, unrelated to the figure itself: four of the six modules threw a JavaScript `ReferenceError` on load in a real browser (`loadOfflineQueue is not defined` in `roundabout/app.js`; `updateNetworkStatus is not defined` in `pedestrian/app.js` and `institutional-idling/app.js`; `processQueue is not defined` in `bus-idling/app.js`) — only `main-road` and `t-junction` loaded without error. The screenshots were still captured correctly by forcing the screen transition directly (see the `force_survey_js` workaround in `take_screenshots.py`), so the figure is accurate, but **these are real, live defects in the deployed frontend**, not an artifact of the screenshot method. They were not fixed here (out of scope for a figures task) and are reported in TECHNICAL_DOCUMENTATION.md for the authors to address.
 
