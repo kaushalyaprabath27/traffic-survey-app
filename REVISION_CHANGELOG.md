@@ -766,3 +766,10 @@ possibility before publication -- previously recorded as closed
 because the manuscript said footage was deleted.
 
 Recompiled twice, clean, 21 pages (unchanged).
+
+## Round 3, follow-up 4 (30 Aug 2026)
+
+Added verbatim, closing sentence of Limitations (no separate
+Conclusion section exists in this template): "Future validation should
+include independent raters, additional locations, and different
+environmental conditions." Recompiled clean, 21 pages.
