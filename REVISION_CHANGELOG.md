@@ -706,3 +706,38 @@ and the added sentence roughly offset each other).
 
 `MethodsX_latex/SUBMISSION_NOTES.md` §9 updated to record this as
 done, keeping the original proposal text for the record.
+
+## Round 3, follow-up 2 (30 Aug 2026): password paragraph reads as unfixed on a skim
+
+Author flagged: the Security model paragraph opens "Administrator
+passwords were found stored in plaintext..." -- true only historically,
+but reads as a current-state claim to a reader who doesn't reach the
+second sentence.
+
+**Password paragraph restructured** to lead with the current, correct
+state ("Administrator passwords are stored as salted SHA-256 hashes...
+not plaintext"), then the best-practice caveat, then the historical
+fact and fix timeline. Every fact preserved, only the order changed.
+
+**While checking for the same pattern elsewhere, found a second,
+genuine self-narration miss from Blocker 2's round-3 sweep**: the
+idempotency paragraph read "before this method's current revision, the
+backend could not recognize a retried batch..." -- literal
+manuscript-revision-history language, the exact thing Blocker 2 was
+supposed to remove, missed because the sweep's search terms (`this
+revision`, `earlier draft`, etc.) didn't match this specific wording.
+Restructured the same way: now leads with "idempotency now protects
+against," states the fix and its live confirmation first, then explains
+that the load test itself predates the fix (a real methodological
+caveat about that test, not commentary on the manuscript's drafts).
+
+Checked the rest of the manuscript for the same pattern (grep for
+`before this`, `prior to this`, `earlier version of this`, `current
+revision`) -- only these two paragraphs matched; the other legitimate
+match ("Administrators who registered before this migration...") refers
+to a real operational migration event, not the manuscript's revision
+history, and was left alone.
+
+Recompiled twice, clean, 21 pages (unchanged). Two new minor underfull
+hboxes on the idempotency paragraph's page (cosmetic line-spacing only,
+same class of pre-existing warning as elsewhere in this document).
