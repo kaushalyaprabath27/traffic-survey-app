@@ -1,7 +1,7 @@
 {
   "name": "Traffic Survey Master",
   "short_name": "Traffic Master",
-  "description": "Unified dashboard for 6 traffic survey scenarios.",
+  "description": "Unified dashboard for 7 traffic survey scenarios.",
   "start_url": "index.html",
   "display": "fullscreen",
   "background_color": "#0f172a",
