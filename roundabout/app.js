@@ -294,6 +294,30 @@ setTimeout(() => {
             surveyScreen.classList.remove('hidden');
             surveyScreen.classList.add('active');
         }
+
+        // This page was reached via a full navigation from the root portal's
+        // redirect, which exits any fullscreen the portal entered on its own
+        // "Next" click -- fullscreen is per-document and does not survive a
+        // navigation. skipSetup=true also hides the only button that could
+        // normally re-request it, and browsers refuse requestFullscreen()
+        // without a fresh user gesture, so it can't just be silently
+        // re-triggered here on load. Show a one-tap button instead.
+        if (!document.fullscreenElement) {
+            const fsBtn = document.createElement('button');
+            fsBtn.id = 'reenter-fullscreen-btn';
+            fsBtn.innerHTML = '<i class="fa-solid fa-expand"></i> Tap for Fullscreen';
+            fsBtn.style.cssText = 'position:fixed;bottom:16px;left:50%;transform:translateX(-50%);z-index:9998;background:#3b82f6;color:#fff;border:none;padding:0.6rem 1.2rem;border-radius:2rem;font-weight:600;font-size:0.9rem;box-shadow:0 4px 12px rgba(0,0,0,0.3);display:flex;align-items:center;gap:0.5rem;';
+            fsBtn.addEventListener('click', () => {
+                if (document.documentElement.requestFullscreen) {
+                    document.documentElement.requestFullscreen().catch(e => console.log(e));
+                }
+                if (screen.orientation && screen.orientation.lock) {
+                    screen.orientation.lock('landscape').catch(e => console.log('Orientation lock failed:', e));
+                }
+                fsBtn.remove();
+            });
+            document.body.appendChild(fsBtn);
+        }
     }
 }, 100);
 
