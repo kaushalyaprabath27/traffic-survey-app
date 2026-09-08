@@ -38,6 +38,21 @@ function init() {
     });
 
     document.getElementById('btn-admin-portal').addEventListener('click', (e) => { e.preventDefault(); switchScreen('admin'); });
+
+    // Data Privacy & Local Backup: was a permanently-visible card on the
+    // Setup screen; now a small link on the Welcome screen (matching
+    // Researcher/Admin Access) that opens the same content in a modal.
+    const privacyOverlay = document.getElementById('privacy-modal-overlay');
+    document.getElementById('btn-privacy-info')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        privacyOverlay.classList.remove('hidden');
+    });
+    document.getElementById('btn-privacy-close')?.addEventListener('click', () => {
+        privacyOverlay.classList.add('hidden');
+    });
+    privacyOverlay?.addEventListener('click', (e) => {
+        if (e.target === privacyOverlay) privacyOverlay.classList.add('hidden'); // click outside the card
+    });
     document.getElementById('btn-admin-back').addEventListener('click', () => { switchScreen('welcome'); });
     document.getElementById('admin-form').addEventListener('submit', handleAdminRegister);
     btnShareLocation.addEventListener('click', getGPSLocation);

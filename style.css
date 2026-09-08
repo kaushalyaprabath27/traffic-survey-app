@@ -114,6 +114,23 @@ body.light-theme .toast { background: rgba(255, 255, 255, 0.9); color: var(--tex
     display: none;
 }
 
+/* Data Privacy modal (opened from the Welcome screen link) */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    padding: 1rem;
+}
+
+.modal-overlay.hidden {
+    display: none;
+}
+
 /* Glass Card */
 .glass-card {
     background: var(--glass-bg);
