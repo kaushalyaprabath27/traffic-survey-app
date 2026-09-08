@@ -229,6 +229,7 @@ function handleVerifyOTP(data) {
     {name: "main-road",           headers: ["name", "location", "locationNumber", "date", "time", "direction", "vehicleType", "EventID"]},
     {name: "roundabout",          headers: ["name", "location", "locationNumber", "date", "time", "direction", "vehicleType", "EventID"]},
     {name: "t-junction",          headers: ["name", "location", "locationNumber", "date", "time", "direction", "vehicleType", "EventID"]},
+    {name: "4-way-junction",      headers: ["name", "location", "locationNumber", "date", "time", "direction", "vehicleType", "EventID"]},
     {name: "pedestrian",          headers: ["Name", "Location", "Location Number", "Date", "Start Time", "Finish Time", "Count IN", "Count OUT", "EventID"]},
     {name: "bus-idling",          headers: ["Name", "Location", "GPS Coordinates", "Date", "Bus Route", "Start Time", "Stop Time", "Idling Duration", "Got Off", "Got On", "EventID"]},
     {name: "institutional-idling", headers: ["Name", "Location", "Location Number", "Date", "Time", "Direction", "Action", "Vehicle Type", "EventID"]}
@@ -383,7 +384,7 @@ function handleSubmitBatch(data) {
     }
 
     let rowData = [];
-    if (sType === "main-road" || sType === "roundabout" || sType === "t-junction") {
+    if (sType === "main-road" || sType === "roundabout" || sType === "t-junction" || sType === "4-way-junction") {
       rowData = [
         item.name          || "",
         item.location      || "",

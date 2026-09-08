@@ -1,4 +1,12 @@
-const CACHE_NAME = 'master-traffic-survey-v1';
+// Bumped v1 -> v2 when the 4-way-junction module was added: this file's own
+// bytes are what the browser diffs to decide a new service worker exists at
+// all, so editing index.html alone (adding the new <option>) never triggers
+// an update -- the old service worker keeps serving its cached index.html
+// (cache-first below) forever, which is why a change like a new dropdown
+// option can silently never appear for anyone who has visited before.
+// skipWaiting()/clients.claim() below make a version bump like this one take
+// over immediately instead of waiting for every open tab to be closed first.
+const CACHE_NAME = 'master-traffic-survey-v2';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
@@ -8,10 +16,19 @@ const ASSETS_TO_CACHE = [
 ];
 
 self.addEventListener('install', event => {
+    self.skipWaiting();
     event.waitUntil(
         caches.open(CACHE_NAME)
             .then(cache => cache.addAll(ASSETS_TO_CACHE))
             .catch(err => console.log('Cache install error:', err))
+    );
+});
+
+self.addEventListener('activate', event => {
+    event.waitUntil(
+        caches.keys().then(keys =>
+            Promise.all(keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key)))
+        ).then(() => self.clients.claim())
     );
 });
 

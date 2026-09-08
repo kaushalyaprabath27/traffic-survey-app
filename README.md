@@ -5,13 +5,14 @@ A distributed, offline-first progressive web application (PWA) suite designed fo
 This repository contains the frontend application suite, which is built on an edge-aggregation batching architecture designed specifically to circumvent strict free-tier execution quota limitations when syncing data to Google Sheets via Google Apps Script.
 
 ## The Modules
-The suite consists of a root portal and six specialized surveying modules tailored to distinct traffic measurement scenarios:
+The suite consists of a root portal and seven specialized surveying modules tailored to distinct traffic measurement scenarios:
 1. **`main-road`**: Tracks directional traffic flow (In/Out) along primary arteries.
 2. **`roundabout`**: Tracks traffic entering and exiting circular intersections.
 3. **`t-junction`**: Tracks complex 3-way directional flow.
-4. **`pedestrian`**: Tracks zebra crossing pedestrian volume and crossing duration.
-5. **`bus-idling`**: Tracks public transport dwell times, boarding/alighting counts, and GPS coordinates.
-6. **`institutional-idling`**: Tracks vehicle dwell times and actions at school/institutional drop-off zones.
+4. **`4-way-junction`**: Tracks turning-movement flow (Left/Straight/Right) at four-way junctions.
+5. **`pedestrian`**: Tracks zebra crossing pedestrian volume and crossing duration.
+6. **`bus-idling`**: Tracks public transport dwell times, boarding/alighting counts, and GPS coordinates.
+7. **`institutional-idling`**: Tracks vehicle dwell times and actions at school/institutional drop-off zones.
 
 ## Architecture and Technical Documentation
 For an exhaustive breakdown of the batch-processing network engine, Google Apps Script backend routing, and empirical quota-reduction benchmarks, please read the [TECHNICAL_DOCUMENTATION.md](TECHNICAL_DOCUMENTATION.md).
