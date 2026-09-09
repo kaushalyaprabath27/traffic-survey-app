@@ -1,0 +1,259 @@
+/* =====================================================================
+   Welcome intro -- vehicles converge on the chart mark
+   =====================================================================
+   The survey vehicles this app actually counts (motorcycle, tuk tuk, car,
+   bus, van, truck) drive in from every edge, converge on one point, and
+   that point becomes the chart mark above "Welcome to Traffic Survey" --
+   traffic going in, data coming out, which is what the tool does.
+
+   The convergence point is not the middle of the screen: intro.js measures
+   where the real card icon will sit and drives everything to those exact
+   coordinates, so the intro's chart and the card's chart are the same size
+   in the same place and the hand-off is a straight cross-fade with no jump.
+
+   Everything here is scoped to #intro-overlay or the .intro-* classes
+   except the two arming rules directly below, so removing intro.css and
+   intro.js from index.html restores the original screen exactly.
+   ===================================================================== */
+
+/* Hide the card until the intro hands off. Set by an inline <head> script
+   (before first paint, so the card never flashes) with a 5s failsafe that
+   removes it even if intro.js never runs. */
+html.intro-armed #welcome-screen .welcome-card { opacity: 0; }
+html.intro-armed #theme-toggle { opacity: 0; }
+
+#intro-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 5000;
+    overflow: hidden;
+    background: var(--bg-gradient);
+    cursor: pointer;
+    /* --cx / --cy are written by intro.js: the measured centre of the real
+       card icon, not the centre of the viewport. */
+    --cx: 50vw;
+    --cy: 50vh;
+}
+
+#intro-overlay.intro-fading {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .45s ease;
+}
+
+/* ---------- background: faint rings + spokes, like an intersection ---- */
+.intro-guides {
+    position: absolute;
+    left: var(--cx);
+    top: var(--cy);
+    width: 1000px;
+    height: 1000px;
+    margin: -500px 0 0 -500px;
+    border-radius: 50%;
+    opacity: 0;
+    background:
+        repeating-conic-gradient(from 0deg, rgba(148, 163, 184, .07) 0deg .3deg, transparent .3deg 45deg),
+        repeating-radial-gradient(circle, rgba(148, 163, 184, .07) 0 1px, transparent 1px 84px);
+    -webkit-mask-image: radial-gradient(circle, #000 26%, transparent 70%);
+    mask-image: radial-gradient(circle, #000 26%, transparent 70%);
+    animation: introGuidesIn 1.4s ease forwards;
+}
+
+@keyframes introGuidesIn {
+    from { opacity: 0; transform: scale(.82); }
+    to   { opacity: 1; transform: scale(1); }
+}
+
+/* ---------- vehicles ------------------------------------------------- */
+.intro-vehicle {
+    position: absolute;
+    left: var(--cx);
+    top: var(--cy);
+    width: 0;
+    height: 0;
+    display: grid;
+    place-items: center;
+    color: var(--vc, #60a5fa);
+    transform: translate(var(--dx), var(--dy)) rotate(var(--a));
+    animation: introDrive var(--t) cubic-bezier(.42, .02, .28, 1) var(--d) forwards;
+    will-change: transform, opacity;
+}
+
+.intro-vehicle i {
+    font-size: 1.45rem;
+    filter: drop-shadow(0 0 9px currentColor);
+}
+
+/* Trail, drawn behind the vehicle in its own rotated space. Which side is
+   "behind" depends on which way the Font Awesome glyph faces -- intro.js
+   sets .faces-left / .faces-right on the overlay so both the rotation and
+   the trail flip together if that ever changes. */
+.intro-vehicle::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    height: 2px;
+    width: 84px;
+    border-radius: 2px;
+    opacity: .45;
+    transform: translateY(-50%);
+}
+
+#intro-overlay.faces-left .intro-vehicle::before {
+    left: 13px;
+    background: linear-gradient(to right, currentColor, transparent);
+}
+
+#intro-overlay.faces-right .intro-vehicle::before {
+    right: 13px;
+    background: linear-gradient(to left, currentColor, transparent);
+}
+
+@keyframes introDrive {
+    from { transform: translate(var(--dx), var(--dy)) rotate(var(--a)); opacity: 0; }
+    12%  { opacity: 1; }
+    88%  { opacity: 1; }
+    to   { transform: translate(0, 0) rotate(var(--a)) scale(.25); opacity: 0; }
+}
+
+/* ---------- convergence point: core + arrival rings ------------------ */
+.intro-core {
+    position: absolute;
+    left: var(--cx);
+    top: var(--cy);
+    width: 10px;
+    height: 10px;
+    margin: -5px 0 0 -5px;
+    border-radius: 50%;
+    background: #bfdbfe;
+    opacity: 0;
+    animation: introCoreIn 1.25s ease-out forwards;
+}
+
+@keyframes introCoreIn {
+    from { opacity: 0; box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); transform: scale(.4); }
+    to   { opacity: 1; box-shadow: 0 0 42px 14px rgba(59, 130, 246, .55); transform: scale(1); }
+}
+
+.intro-ring {
+    position: absolute;
+    left: var(--cx);
+    top: var(--cy);
+    width: 44px;
+    height: 44px;
+    margin: -22px 0 0 -22px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(147, 197, 253, .8);
+    pointer-events: none;
+    animation: introRing .62s ease-out forwards;
+}
+
+@keyframes introRing {
+    from { transform: scale(.25); opacity: .85; }
+    to   { transform: scale(2.7); opacity: 0; }
+}
+
+.intro-ring.burst {
+    width: 90px;
+    height: 90px;
+    margin: -45px 0 0 -45px;
+    border-width: 2px;
+    border-color: rgba(167, 139, 250, .75);
+    animation-duration: .95s;
+}
+
+/* ---------- the chart mark being drawn ------------------------------- */
+.intro-chart {
+    position: absolute;
+    left: var(--cx);
+    top: var(--cy);
+    color: var(--accent-primary);
+    opacity: 0;
+    transition: opacity .3s ease;
+    filter: drop-shadow(0 0 14px rgba(59, 130, 246, .55));
+}
+
+.intro-chart.showing { opacity: 1; }
+
+/* Dash values are set from getTotalLength() in JS, so the draw is exact
+   for whatever the path actually is rather than a hand-guessed length. */
+.intro-chart .chart-mark .axis,
+.intro-chart .chart-mark .line {
+    transition: stroke-dashoffset var(--draw, 600ms) cubic-bezier(.35, 0, .25, 1);
+}
+
+.intro-chart .chart-mark .dot {
+    opacity: 0;
+    transform: scale(0);
+    transform-box: fill-box;
+    transform-origin: center;
+    transition: opacity .2s ease, transform .32s cubic-bezier(.34, 1.56, .64, 1);
+}
+
+.intro-chart .chart-mark .dot.on {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* ---------- skip hint ------------------------------------------------ */
+.intro-skip {
+    position: absolute;
+    left: 50%;
+    bottom: 26px;
+    transform: translateX(-50%);
+    color: var(--text-secondary, #94a3b8);
+    font-size: .78rem;
+    letter-spacing: .04em;
+    opacity: 0;
+    animation: introSkipIn .5s ease forwards .9s;
+    pointer-events: none;
+}
+
+@keyframes introSkipIn { to { opacity: .55; } }
+
+/* ---------- hand-off: card and its contents arrive ------------------- */
+/* The icon is deliberately NOT in the stagger set: it has to be at full
+   opacity the instant the card is, because the intro's chart is fading out
+   from the same pixels. Everything else rises in behind it. */
+body.intro-reveal #welcome-screen .welcome-card {
+    animation: introCardIn .45s ease forwards;
+}
+
+body.intro-reveal #welcome-screen .welcome-card > *:not(.icon-pulse) {
+    opacity: 0;
+    animation: introRise .5s cubic-bezier(.2, .7, .3, 1) forwards;
+}
+
+body.intro-reveal #welcome-screen .welcome-card > *:nth-child(2) { animation-delay: .06s; }
+body.intro-reveal #welcome-screen .welcome-card > *:nth-child(3) { animation-delay: .14s; }
+body.intro-reveal #welcome-screen .welcome-card > *:nth-child(4) { animation-delay: .22s; }
+body.intro-reveal #welcome-screen .welcome-card > *:nth-child(5) { animation-delay: .30s; }
+
+body.intro-reveal #theme-toggle {
+    opacity: 0;
+    animation: introRise .5s ease forwards .34s;
+}
+
+@keyframes introCardIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@keyframes introRise {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- the chart mark itself (used by the card too) ------------- */
+.icon-pulse .chart-mark {
+    display: block;
+    width: 4rem;
+    height: 4rem;
+    margin: 0 auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #intro-overlay { display: none !important; }
+    html.intro-armed #welcome-screen .welcome-card,
+    html.intro-armed #theme-toggle { opacity: 1; }
+}
