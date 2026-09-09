@@ -31,17 +31,33 @@
     // hangs off. If FA ever flips them, flip this one flag.
     var GLYPH_FACES_LEFT = true;
 
+    // Every spawn point gets its own vehicle -- no repeats. The seven the
+    // app actually counts (Bike, Tuk Tuk, Car, Bus, Van, Truck, Long
+    // Vehicle, matching the survey buttons in each module) come in larger
+    // and brighter as the hero set; the rest are ambient road traffic drawn
+    // smaller and dimmer, so the mix reads as a real street rather than a
+    // mechanical starburst of the same icon.
+    //
+    // All are Font Awesome 6 free solid glyphs. If one ever renders as an
+    // empty box, that name has moved to Pro -- swap it for another free one
+    // here, nothing else needs to change.
     var VEHICLES = [
-        { icon: 'fa-motorcycle',   color: '#60a5fa' },
-        { icon: 'fa-car',          color: '#a78bfa' },
-        { icon: 'fa-taxi',         color: '#fbbf24' },
-        { icon: 'fa-bus',          color: '#34d399' },
-        { icon: 'fa-truck',        color: '#38bdf8' },
-        { icon: 'fa-van-shuttle',  color: '#f472b6' },
-        { icon: 'fa-car',          color: '#818cf8' },
-        { icon: 'fa-motorcycle',   color: '#22d3ee' },
-        { icon: 'fa-truck-moving', color: '#fb923c' },
-        { icon: 'fa-bus',          color: '#4ade80' }
+        // the seven survey categories
+        { icon: 'fa-motorcycle',   color: '#60a5fa', primary: true },  // Bike
+        { icon: 'fa-taxi',         color: '#fbbf24', primary: true },  // Tuk Tuk
+        { icon: 'fa-car',          color: '#a78bfa', primary: true },  // Car
+        { icon: 'fa-bus',          color: '#34d399', primary: true },  // Bus
+        { icon: 'fa-van-shuttle',  color: '#f472b6', primary: true },  // Van
+        { icon: 'fa-truck',        color: '#38bdf8', primary: true },  // Truck
+        { icon: 'fa-truck-moving', color: '#fb923c', primary: true },  // Long Vehicle
+        // ambient traffic
+        { icon: 'fa-bicycle',      color: '#22d3ee' },
+        { icon: 'fa-car-side',     color: '#818cf8' },
+        { icon: 'fa-bus-simple',   color: '#4ade80' },
+        { icon: 'fa-truck-pickup', color: '#7dd3fc' },
+        { icon: 'fa-truck-fast',   color: '#c084fc' },
+        { icon: 'fa-tractor',      color: '#facc15' },
+        { icon: 'fa-ambulance',    color: '#fb7185' }
     ];
 
     var CHART_SVG =
@@ -116,18 +132,30 @@
         // spread the headings evenly with a little jitter so it reads as
         // traffic rather than a mechanical starburst.
         var reach = Math.sqrt(window.innerWidth * window.innerWidth + window.innerHeight * window.innerHeight) * 0.62;
-        var n = VEHICLES.length;
         var arrivals = [];
 
-        VEHICLES.forEach(function (spec, i) {
-            var angle = (360 / n) * i + (Math.random() * 18 - 9);
+        // Alternate hero and ambient vehicles around the circle rather than
+        // walking the array in order, which would land all seven survey
+        // categories on one side of the screen and all the ambient traffic
+        // on the other.
+        var heroes = VEHICLES.filter(function (v) { return v.primary; });
+        var ambient = VEHICLES.filter(function (v) { return !v.primary; });
+        var order = [];
+        for (var q = 0; q < Math.max(heroes.length, ambient.length); q++) {
+            if (heroes[q]) order.push(heroes[q]);
+            if (ambient[q]) order.push(ambient[q]);
+        }
+        var n = order.length;
+
+        order.forEach(function (spec, i) {
+            var angle = (360 / n) * i + (Math.random() * 14 - 7);
             var rad = angle * Math.PI / 180;
             var dist = reach * (0.85 + Math.random() * 0.3);
-            var delay = Math.round((i * 45 + Math.random() * 60) * k);
+            var delay = Math.round((i * 38 + Math.random() * 55) * k);
             var dur = Math.round((850 + Math.random() * 300) * k);
 
             var v = document.createElement('div');
-            v.className = 'intro-vehicle';
+            v.className = spec.primary ? 'intro-vehicle' : 'intro-vehicle small';
             v.style.setProperty('--dx', Math.cos(rad) * dist + 'px');
             v.style.setProperty('--dy', Math.sin(rad) * dist + 'px');
             // Travel direction is angle+180 (start point back to centre).

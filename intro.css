@@ -80,8 +80,23 @@ html.intro-armed #theme-toggle { opacity: 0; }
 }
 
 .intro-vehicle i {
-    font-size: 1.45rem;
+    font-size: 1.5rem;
     filter: drop-shadow(0 0 9px currentColor);
+}
+
+/* Ambient traffic: the vehicles the app does not have a survey category
+   for. Smaller, dimmer and shorter-trailed than the seven it counts, so
+   the hero set still reads first and the whole thing gains some depth. */
+.intro-vehicle.small i {
+    font-size: 1.05rem;
+    filter: drop-shadow(0 0 6px currentColor);
+    opacity: .72;
+}
+
+.intro-vehicle.small::before {
+    width: 54px;
+    height: 1.5px;
+    opacity: .28;
 }
 
 /* Trail, drawn behind the vehicle in its own rotated space. Which side is
