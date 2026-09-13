@@ -57,7 +57,10 @@ const themeToggleBtn = document.getElementById('theme-toggle');
 function init() {
     setInterval(syncOfflineQueue, 15000);
 
-    loadOfflineQueue();
+    // (was loadOfflineQueue(), which never existed and threw here, aborting
+    // init() before setupEventListeners() -- see updateSyncStatus() below,
+    // which already refreshes the pending count, and the 15s interval above
+    // which does the actual syncing.)
     updateSyncStatus();
     setupEventListeners();
     initTheme();
@@ -128,7 +131,7 @@ function setupEventListeners() {
     window.addEventListener('online', () => {
         appState.isOnline = true;
         updateSyncStatus();
-        processQueue();
+        syncOfflineQueue();
     });
     
     window.addEventListener('offline', () => {

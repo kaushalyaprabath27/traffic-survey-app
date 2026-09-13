@@ -64,9 +64,9 @@ function init() {
     setInterval(syncOfflineQueue, 15000);
 
     loadTheme();
-    updateNetworkStatus();
-    window.addEventListener('online', updateNetworkStatus);
-    window.addEventListener('offline', updateNetworkStatus);
+    updateSyncStatus();
+    window.addEventListener('online', updateSyncStatus);
+    window.addEventListener('offline', updateSyncStatus);
 
     if (appState.isOnline) {
         processOfflineQueue();
@@ -296,7 +296,7 @@ function saveToOfflineQueue(record) {
     const queue = getOfflineQueue();
     queue.push(record);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(queue));
-    updateNetworkStatus();
+    updateSyncStatus();
 }
 
 
@@ -312,7 +312,7 @@ function processOfflineQueue() {
     const sendNext = (index) => {
         if (index >= queue.length) {
             localStorage.removeItem(STORAGE_KEY);
-            updateNetworkStatus();
+            updateSyncStatus();
             return;
         }
 
@@ -325,7 +325,7 @@ function processOfflineQueue() {
         .catch(() => {
             const remaining = queue.slice(index);
             localStorage.setItem(STORAGE_KEY, JSON.stringify(remaining));
-            updateNetworkStatus();
+            updateSyncStatus();
         });
     };
 

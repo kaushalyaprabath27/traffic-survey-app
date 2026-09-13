@@ -29,6 +29,15 @@ setTimeout(() => {
 const STORAGE_KEY = 'bus_idling_survey_queue';
 const THEME_KEY = 'bus_idling_theme';
 
+// Declared here rather than beside the sync logic further down: the
+// top-level updateOnlineStatus() call reaches syncOfflineQueue(), which
+// reads isSyncing, well before that point in the file. As `let` further
+// down it was still in the temporal dead zone then, so the read threw and
+// aborted the rest of the script -- taking the survey screen's own
+// skipSetup handling with it, which is why this module recorded nothing.
+let sessionCount = 0;
+let isSyncing = false;
+
 // App State
 const appState = {
     adminId: '',
@@ -311,7 +320,7 @@ saveRecordBtn.addEventListener('click', () => {
     
     showToast("Record saved locally!", "success");
     resetSurveyForm();
-    processQueue();
+    syncOfflineQueue();
 });
 
 // Network Syncing
@@ -320,7 +329,7 @@ const onlineStatus = document.getElementById('onlineStatus');
 function updateOnlineStatus() {
     if (navigator.onLine) {
         onlineStatus.innerHTML = '<span class="status-dot"></span><span class="status-text">Online</span>';
-        processQueue();
+        syncOfflineQueue();
     } else {
         onlineStatus.innerHTML = '<span class="status-dot error"></span><span class="status-text">Offline</span>';
     }
@@ -461,8 +470,10 @@ setTimeout(() => {
 
 
 // --- BATCHING, SYNC & NEW FEATURES LOGIC ---
-let sessionCount = 0;
-let isSyncing = false;
+// (sessionCount and isSyncing are declared near the top of this file: they
+// are read by syncOfflineQueue()/updateSessionCounter(), which run during
+// the top-level updateOnlineStatus() call long before this point, and a
+// `let` here left them in the temporal dead zone at that moment.)
 
 const gradients = [
     'linear-gradient(135deg, #f59e0b, #d97706)',

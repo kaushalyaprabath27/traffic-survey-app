@@ -56,9 +56,9 @@ function init() {
     setInterval(syncOfflineQueue, 15000);
 
     loadTheme();
-    updateNetworkStatus();
-    window.addEventListener('online', updateNetworkStatus);
-    window.addEventListener('offline', updateNetworkStatus);
+    updateSyncStatus();
+    window.addEventListener('online', updateSyncStatus);
+    window.addEventListener('offline', updateSyncStatus);
 
     // Initial check for offline queue sync
     if (appState.isOnline) {
@@ -236,7 +236,7 @@ function saveToOfflineQueue(record) {
     const queue = getOfflineQueue();
     queue.push(record);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(queue));
-    updateNetworkStatus(); // Update offline count in UI
+    updateSyncStatus(); // Update offline count in UI
 }
 
 
@@ -254,7 +254,7 @@ function processOfflineQueue() {
         if (index >= queue.length) {
             // All done
             localStorage.removeItem(STORAGE_KEY);
-            updateNetworkStatus();
+            updateSyncStatus();
             return;
         }
 
@@ -269,7 +269,7 @@ function processOfflineQueue() {
             // Stop syncing if connection drops again, keep remaining items in queue
             const remaining = queue.slice(index);
             localStorage.setItem(STORAGE_KEY, JSON.stringify(remaining));
-            updateNetworkStatus();
+            updateSyncStatus();
         });
     };
 
