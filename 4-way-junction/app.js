@@ -27,7 +27,10 @@ setTimeout(() => {
     }
 }, 500);
 
-const STORAGE_KEY = 'traffic_survey_offline_queue';
+// Own queue key, matching every other module. Sharing main-road's key meant
+// a device that used both modules built one mixed queue, and the backend
+// wrote the whole batch to whichever type happened to be first in it.
+const STORAGE_KEY = 'traffic_survey_4way_queue';
 
 // App State
 const appState = {

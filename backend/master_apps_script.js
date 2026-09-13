@@ -355,10 +355,21 @@ function handleSubmitBatch(data) {
   }
   
   const targetSs = SpreadsheetApp.openById(targetSheetId);
-  let targetSheet = targetSs.getSheetByName(surveyType);
-  if (!targetSheet) targetSheet = targetSs.insertSheet(surveyType);
-  
-  let rows = [];
+
+  // Rows are grouped by their OWN surveyType and each group written to its
+  // own sheet. Previously one sheet was chosen from payload[0].surveyType
+  // and the whole batch went there, which silently misrouted every event in
+  // a mixed batch: a client queue can legitimately hold more than one type
+  // (modules share a localStorage queue key, and older builds shipped with
+  // main-road and 4-way-junction on the same key), so a surveyor who used
+  // two modules had one module's taps land in the other module's sheet --
+  // the second sheet then looks like it never recorded anything. Where the
+  // two types had different column counts it was worse than misrouting:
+  // setValues() was called with rows[0].length for the whole 2D array, so a
+  // ragged batch threw, the client never saw success, and the queue was
+  // never cleared -- that device then retried the same failing batch
+  // forever and stopped syncing entirely.
+  const groups = {};
   let duplicatesSkipped = 0;
   const cache = CacheService.getScriptCache();
 
@@ -440,15 +451,43 @@ function handleSubmitBatch(data) {
     else {
       rowData = [JSON.stringify(item)];
     }
-    rows.push(rowData);
+    if (!groups[sType]) groups[sType] = [];
+    groups[sType].push(rowData);
   }
 
-  if (rows.length > 0) {
-    // Bulk insert for 98% reduction in server runtime
-    targetSheet.getRange(targetSheet.getLastRow() + 1, 1, rows.length, rows[0].length).setValues(rows);
+  // One bulk insert per sheet (still one write per type, not per row, so the
+  // runtime saving that made batching worth doing is kept).
+  let written = 0;
+  const sheetNames = Object.keys(groups);
+  for (let g = 0; g < sheetNames.length; g++) {
+    const name = sheetNames[g];
+    const rows = groups[name];
+    if (!rows.length) continue;
+
+    let sheet = targetSs.getSheetByName(name);
+    if (!sheet) sheet = targetSs.insertSheet(name);
+
+    // Pad to the widest row in this group before writing. Within one type
+    // the rows are the same shape, but the unknown-type fallback below
+    // produces a single-column row, and setValues() rejects a ragged array
+    // outright -- padding keeps one odd record from failing the whole batch
+    // and stalling that device's queue.
+    let width = 0;
+    for (let r = 0; r < rows.length; r++) {
+      if (rows[r].length > width) width = rows[r].length;
+    }
+    const padded = rows.map(function (r) {
+      if (r.length === width) return r;
+      const copy = r.slice();
+      while (copy.length < width) copy.push("");
+      return copy;
+    });
+
+    sheet.getRange(sheet.getLastRow() + 1, 1, padded.length, width).setValues(padded);
+    written += padded.length;
   }
 
-  return responseJson({status: "success", count: rows.length, duplicatesSkipped: duplicatesSkipped});
+  return responseJson({status: "success", count: written, duplicatesSkipped: duplicatesSkipped});
 }
 
 function handleSubmit(data) {
