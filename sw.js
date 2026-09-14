@@ -6,13 +6,14 @@
 // option can silently never appear for anyone who has visited before.
 // skipWaiting()/clients.claim() below make a version bump like this one take
 // over immediately instead of waiting for every open tab to be closed first.
-const CACHE_NAME = 'master-traffic-survey-v3';
+const CACHE_NAME = 'master-traffic-survey-v4';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
     './manifest.json',
     './intro.css',
     './intro.js',
+    './fullscreen.js',
     'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap',
     'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css'
 ];
