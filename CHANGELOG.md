@@ -6,6 +6,19 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/). Dates an
 
 The `v1.0.0` git tag points to commit `3dafbde` (2026-07-25 19:54 +0530). Two further commits — both same-day — and one the following day were made *after* that tag and are not included in it: the backend rate-limiting work (`225b4d6`, `3976c5f`, 2026-07-25 20:33–20:38) and the self-hosted app icons (`0f02fc5`, 2026-07-26). The GitHub Release for `v1.0.0` (published 2026-07-25 14:47 UTC) describes the suite generally and does not specifically claim the rate-limiting behavior. This is stated plainly rather than left implicit: any description of "v1.0.0" that includes the rate limiter is describing the tip of `main` as of 2026-07-26, not the exact tagged commit. Whether to move the tag forward, or cut a `v1.0.1`, is an author decision.
 
+## [v1.2.0] — 2026-10-06
+
+The release described by the MethodsX article. Same six survey modules as v1.1.0 (main-road, roundabout, t-junction, pedestrian, bus-idling, institutional-idling); everything the article cites is in this tag.
+
+### Added
+- `data/validation/main-road_2026-07-14/raw_matched.xlsx` and `analysis/recompute_main_road.py` — full per-vehicle main-road matched table from a re-analysis of the source video, and the script that recomputes every main-road figure from it.
+- `analysis/recompute_validation.py`, `analysis/quota_exceeded_probe.py`, `docs/RESULT_PROVENANCE.md`, `docs/MAIN_ROAD_DISCREPANCY_ANALYSIS.md` (binning fix) and the Figure 3 redaction scripts (`tools/redact/`).
+- Figure 2 screenshots recaptured in landscape; regenerated graphical abstract (759 observations).
+
+### Changed
+- Storage-full handling (`handleStorageFull`, all six modules): a tap that cannot be stored now shows a persistent warning and forces a sync instead of failing silently.
+- Admin IDs widened to `ADM-` + 12 characters from a 32-symbol alphabet (`generateAdminIdSuffix`).
+
 ## [Unreleased]
 
 ### Added
