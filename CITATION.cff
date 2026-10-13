@@ -23,4 +23,4 @@ license: MIT
 repository-code: "https://github.com/kaushalyaprabath27/traffic-survey-app"
 version: 1.2.0
 date-released: "2026-10-06"
-# doi: <<MEASURE: Zenodo DOI, once the v1.2.0 release is archived -- see docs/ZENODO_RELEASE.md>>
+doi: 10.5281/zenodo.23343519
