@@ -18,9 +18,9 @@ authors:
     email: rengarasu@cee.ruh.ac.lk
   - family-names: Ahamed
     given-names: "R. Saahith"
-    affiliation: "Department of Civil and Environmental Engineering, Faculty of Engineering, University of Ruhuna, Sri Lanka"
+    affiliation: "Department of Electrical and Information Engineering, Faculty of Engineering, University of Ruhuna, Sri Lanka"
 license: MIT
 repository-code: "https://github.com/kaushalyaprabath27/traffic-survey-app"
-version: 1.0.0
-date-released: "2026-07-25"
-# doi: <<MEASURE: Zenodo DOI, once the v1.0.0 release is archived -- see docs/ZENODO_RELEASE.md>>
+version: 1.2.0
+date-released: "2026-10-06"
+doi: 10.5281/zenodo.23343519
